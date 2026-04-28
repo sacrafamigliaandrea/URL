@@ -123,6 +123,8 @@ background:linear-gradient(180deg,#87CEEB 0%,#87CEEB 60%,var(--mc-grass) 60%,var
 .bm-overlay{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.4);}
 .sel{width:100%;padding:6px 8px;background:#FAFAF0;border:2px solid var(--bd);font-family:'Rubik';font-weight:600;font-size:.74em;}
 @media(max-width:768px){.app{grid-template-columns:1fr;}.sb{display:none;}.split{grid-template-columns:1fr;}}
+@keyframes drive{from{left:-30px;}to{left:100%;}}
+@keyframes pktSlide{0%{left:0;}50%{left:calc(100% - 10px);}100%{left:0;}}
 </style>
 </head>
 <body>
@@ -199,28 +201,56 @@ background:linear-gradient(180deg,#87CEEB 0%,#87CEEB 60%,var(--mc-grass) 60%,var
 <!-- 3: LE STRADE -->
 <div id="s3" class="sec"><div class="mi">
 <h1><i class="ri-road-map-line" style="color:var(--mc-orange);"></i> Le Strade di Internet</h1>
-<p class="sub">I dati viaggiano su strade di diverse dimensioni. E attenzione: <strong>5G ≠ 5 Gigabyte!</strong></p>
+<p class="sub">I dati viaggiano su <strong>strade</strong> di diversa grandezza. Un'autostrada a 6 corsie è velocissima, una stradina sterrata è lentissima. E attenzione: <strong>5G ≠ 5 Gigabyte!</strong></p>
+
 <div class="cc">
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;font-size:.8em;">
-<div style="padding:8px;background:var(--rbg);text-align:center;border:2px solid rgba(176,46,38,.15);"><div style="font-weight:900;font-size:1.1em;color:var(--mc-red);">5G</div><strong>Generazione</strong><div style="font-size:.75em;color:var(--tx2);">Tipo connessione</div></div>
-<div style="padding:8px;background:rgba(60,68,170,.05);text-align:center;border:2px solid rgba(60,68,170,.15);"><div style="font-weight:900;font-size:1.1em;color:var(--mc-blue);">5 GB</div><strong>Gigabyte</strong><div style="font-size:.75em;color:var(--tx2);">Spazio</div></div>
-<div style="padding:8px;background:var(--gbg);text-align:center;border:2px solid rgba(59,133,38,.15);"><div style="font-weight:900;font-size:1.1em;color:var(--mc-green);">5 Gbps</div><strong>Gigabit/sec</strong><div style="font-size:.75em;color:var(--tx2);">Velocità</div></div>
-</div></div>
+<h3 style="margin-top:0;"><i class="ri-error-warning-line" style="color:var(--mc-red);"></i> ATTENZIONE: tre cose diverse!</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:.8em;margin:8px 0;">
+<div style="padding:10px;background:var(--rbg);text-align:center;border:2px solid rgba(176,46,38,.15);"><div style="font-weight:900;font-size:1.2em;color:var(--mc-red);">5G</div><div style="font-weight:700;">Quinta Generazione</div><div style="font-size:.72em;color:var(--tx2);margin-top:3px;">Tipo di connessione mobile<br>(come 3G, 4G prima di lei)</div></div>
+<div style="padding:10px;background:rgba(60,68,170,.05);text-align:center;border:2px solid rgba(60,68,170,.15);"><div style="font-weight:900;font-size:1.2em;color:var(--mc-blue);">5 GB</div><div style="font-weight:700;">5 Gigabyte</div><div style="font-size:.72em;color:var(--tx2);margin-top:3px;">Quantità di spazio<br>(come nel Peso Digitale!)</div></div>
+<div style="padding:10px;background:var(--gbg);text-align:center;border:2px solid rgba(59,133,38,.15);"><div style="font-weight:900;font-size:1.2em;color:var(--mc-green);">5 Gbps</div><div style="font-weight:700;">5 Gigabit/secondo</div><div style="font-size:.72em;color:var(--tx2);margin-top:3px;">Velocità di trasferimento<br>(quanto è veloce la strada)</div></div>
+</div>
+<div class="tip"><i class="ri-lightbulb-line"></i> <strong>G</strong> in 5G = Generazione. <strong>GB</strong> = spazio. <strong>Gbps</strong> = velocità. Tre cose completamente diverse!</div>
+</div>
+
+<div class="cc mt">
+<h3 style="margin-top:0;"><i class="ri-road-map-line"></i> L'autostrada dei dati</h3>
+<p style="font-size:.8em;color:var(--tx2);margin-bottom:8px;">I blocchi colorati sono i tuoi dati: più corsie = più blocchi passano insieme = più veloce!</p>
+<div id="roadViz" style="background:var(--mc-dark);padding:6px 0;border:2px solid #1a1a1a;"></div>
+</div>
+
+<div class="cc mt">
+<h3 style="margin-top:0;"><i class="ri-download-line"></i> Simulatore: quanto ci mette?</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0;">
+<div><div style="font-weight:700;font-size:.72em;margin-bottom:4px;">File</div>
+<select id="dlFile" class="sel" onchange="dlCalc()"><option value="5">Foto 5 MB</option><option value="700">Film SD 700 MB</option><option value="5000" selected>Film HD 5 GB</option><option value="50000">Gioco 50 GB</option></select></div>
+<div><div style="font-weight:700;font-size:.72em;margin-bottom:4px;">Connessione</div>
+<select id="dlConn" class="sel" onchange="dlCalc()"><option value="7">ADSL 7 Mbps</option><option value="30">4G 30 Mbps</option><option value="100" selected>Fibra 100 Mbps</option><option value="1000">Fibra 1 Gbps</option><option value="5000">5G ~5 Gbps</option></select></div>
+</div>
+<div id="dlResult" style="text-align:center;padding:10px;background:var(--mc-dark);color:#fff;font-weight:800;font-size:.9em;"></div>
+</div>
+
 <h2><i class="ri-checkbox-circle-line"></i> Esercizi</h2><div id="s3ex"></div>
 <div class="tc mt"><button class="btn bg" onclick="G(4)">Avanti <i class="ri-arrow-right-line"></i></button></div>
 </div></div>
 
 <!-- 4: DNS -->
 <div id="s4" class="sec"><div class="mi">
-<h1><i class="ri-contacts-book-line" style="color:var(--mc-green);"></i> Il DNS: la Rubrica</h1>
-<p class="sub">Tu scrivi <strong>google.com</strong> — il DNS traduce nel numero IP!</p>
-<div class="cc" style="text-align:center;">
-<span style="padding:8px 14px;background:var(--gbg);font-weight:800;color:var(--mc-green);display:inline-block;">google.com</span>
-<span style="margin:0 8px;font-size:1.2em;">→</span>
-<span style="padding:8px 14px;background:rgba(60,68,170,.06);font-weight:800;color:var(--mc-blue);display:inline-block;">DNS</span>
-<span style="margin:0 8px;font-size:1.2em;">→</span>
-<span style="padding:8px 14px;background:rgba(249,128,29,.06);font-weight:800;color:var(--mc-orange);display:inline-block;">142.250.180.46</span>
+<h1><i class="ri-contacts-book-line" style="color:var(--mc-green);"></i> Il DNS: la Rubrica di Internet</h1>
+<p class="sub">Tu scrivi <strong>google.com</strong> — ma il computer ha bisogno del numero IP. Chi traduce? Il <strong>DNS</strong>: la rubrica telefonica di Internet!</p>
+<div class="cc">
+<div style="display:flex;align-items:center;justify-content:center;gap:10px;padding:10px;flex-wrap:wrap;">
+<div style="padding:10px 16px;background:var(--gbg);font-weight:800;color:var(--mc-green);">google.com</div>
+<div><i class="ri-arrow-right-line" style="font-size:1.3em;color:var(--tx3);"></i></div>
+<div style="padding:10px 16px;background:rgba(60,68,170,.06);font-weight:800;color:var(--mc-blue);">DNS</div>
+<div><i class="ri-arrow-right-line" style="font-size:1.3em;color:var(--tx3);"></i></div>
+<div style="padding:10px 16px;background:rgba(249,128,29,.06);font-weight:800;color:var(--mc-orange);">142.250.180.46</div>
 </div>
+<div class="tip"><i class="ri-contacts-line"></i> Senza DNS dovresti ricordare numeri come 142.250.180.46 per visitare Google. Come chiamare qualcuno senza rubrica!</div>
+</div>
+<h2><i class="ri-gamepad-line"></i> Gioco: Sei il DNS!</h2>
+<p class="sub">Arrivano richieste — traduci il nome nel numero IP corretto!</p>
+<div id="dnsGame"></div>
 <h2><i class="ri-checkbox-circle-line"></i> Esercizi DNS</h2><div id="s4ex"></div>
 <div class="tc mt"><button class="btn bg" onclick="G(5)">Avanti <i class="ri-arrow-right-line"></i></button></div>
 </div></div>
@@ -240,8 +270,20 @@ background:linear-gradient(180deg,#87CEEB 0%,#87CEEB 60%,var(--mc-grass) 60%,var
 <!-- 6: VIAGGIO -->
 <div id="s6" class="sec"><div class="mi">
 <h1><i class="ri-route-line" style="color:var(--mc-orange);"></i> Il Viaggio dei Dati</h1>
-<p class="sub">Un messaggio WhatsApp fa un viaggio incredibile!</p>
+<p class="sub">Quando mandi un messaggio su WhatsApp, quel messaggio fa un viaggio incredibile. Vediamolo passo per passo!</p>
 <div class="cc" id="journeyViz"></div>
+<div class="cc mt">
+<h3 style="margin-top:0;"><i class="ri-question-line"></i> Cosa succede se sei in Wi-Fi vs 5G?</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:.8em;">
+<div style="padding:10px;background:rgba(60,68,170,.05);border:2px solid rgba(60,68,170,.15);">
+<div style="font-weight:800;color:var(--mc-blue);margin-bottom:4px;"><i class="ri-wifi-line"></i> Wi-Fi</div>
+Telefono → <strong>Router Wi-Fi</strong> → cavo fibra/ADSL → ISP → Server<br>
+<span style="font-size:.8em;color:var(--tx2);">Veloce a casa, ma dipende dalla tua fibra</span></div>
+<div style="padding:10px;background:rgba(176,46,38,.05);border:2px solid rgba(176,46,38,.15);">
+<div style="font-weight:800;color:var(--mc-red);margin-bottom:4px;"><i class="ri-signal-tower-line"></i> 5G</div>
+Telefono → <strong>Antenna 5G</strong> → rete operatore → Server<br>
+<span style="font-size:.8em;color:var(--tx2);">Veloce ovunque, ma consumi dati mobili</span></div>
+</div></div>
 <h2><i class="ri-checkbox-circle-line"></i> Quiz</h2><div id="s6ex"></div>
 <div class="tc mt"><button class="btn bg" onclick="G(7)">Avanti <i class="ri-arrow-right-line"></i></button></div>
 </div></div>
@@ -333,7 +375,7 @@ const NP=[{n:'acerionet',x:900,b:1},{n:'Marco_Geek',x:780},{n:'Elena_Code',x:680
 const SEC=['home','video','ip','strade','dns','url','viaggio','https','rifletti'];
 const SL=[['ri-home-line','Home',4],['ri-film-line','Video',4],['ri-home-wifi-line','IP',4],['ri-road-map-line','Strade',4],['ri-contacts-book-line','DNS',4],['ri-link','URL',4],['ri-route-line','Viaggio',4],['ri-lock-line','HTTPS',4],['ri-lightbulb-flash-line','Rifletti',4]];
 
-function init(){loadGame();bT();rT();rL();bVQ();bS2();bS3();bS4();bS5();bS6();bS7();buildJourney();bMeta();bManifesto();
+function init(){loadGame();bT();rT();rL();bVQ();bS2();buildRoad();dlCalc();bS3();bDns();bS4();bS5();bS6();bS7();buildJourney();bMeta();bManifesto();
 document.querySelectorAll('.vid-lock').forEach(el=>{el.addEventListener('contextmenu',e=>e.preventDefault());});
 document.addEventListener('click',sndInit,{once:true});askName();}
 function bT(){document.getElementById('tabs').innerHTML=SEC.map((_,i)=>{const ns=SL[i][2];const studs='';return`<button class="tab ${i===0?'a':''}" id="t${i}" onclick="G(${i})">${SL[i][1]}</button>`;}).join('');}
@@ -367,23 +409,42 @@ if(ch===co){el.classList.add('dok');fb.className='ex-fb s fok';fb.innerHTML='✓
 else{el.classList.add('dno');fb.className='ex-fb s fno';fb.innerHTML='✗ -'+xp+' XP — '+exp+' '+rbrks;Z.x=Math.max(0,Z.x-xp);rT();rL();sndWrong();}}
 
 // ═══ VIDEO QUIZ ═══
-let vqDone=0;
+let vqDone=0;let vidPlayer=null;
 const VQ=[
-{q:'Internet e il Web sono la stessa cosa?',o:['Sì, sono sinonimi','No, sono due cose diverse','Il Web è più vecchio di Internet'],c:1,e:'Internet = infrastruttura (cavi). Web = sistema per navigare!',t:62},
-{q:'Cosa significa WWW?',o:['World Wide Web','Wireless Web World','Web With Windows'],c:0,e:'World Wide Web = ragnatela grande come il mondo!',t:100},
-{q:'Chi ha inventato il World Wide Web?',o:['Steve Jobs','Tim Berners-Lee al CERN','Bill Gates'],c:1,e:'Tim Berners-Lee, ricercatore al CERN di Ginevra, nel 1989!',t:160},
-{q:'Cos\'è un ipertesto?',o:['Un testo molto lungo','Un insieme di documenti collegati da link','Un programma per scrivere'],c:1,e:'Documenti collegati tra loro tramite link = navigazione non lineare!',t:210},
-{q:'Cosa fa il browser?',o:['Traduce l\'HTML in pagine leggibili','Crea i siti web','Collega i cavi di Internet'],c:0,e:'Il browser (Chrome, Safari...) traduce HTML in pagine che puoi vedere!',t:260},
+{q:'Internet e il Web sono la stessa cosa?',o:['Sì, sono sinonimi','No, sono due cose diverse','Il Web è più vecchio'],c:1,e:'Internet = cavi/infrastruttura. Web = sistema per navigare sopra Internet!'},
+{q:'Cos\'è Internet in parole semplici?',o:['Un programma','Un\'infrastruttura di cavi che collega computer','Un sito web'],c:1,e:'Internet è il cavo (fisico o wireless) attraverso cui viaggiano le informazioni!'},
+{q:'Cosa significa "World Wide Web"?',o:['Rete mondiale veloce','Ragnatela grande come il mondo','Web del mondo intero'],c:1,e:'Tela/ragnatela (web) grande come il mondo (world wide)!'},
+{q:'In che anno è stato inventato il WWW?',o:['1969','1989','2001'],c:1,e:'Tim Berners-Lee lo concepì nel 1989 al CERN di Ginevra!'},
+{q:'Chi ha inventato il World Wide Web?',o:['Steve Jobs','Bill Gates','Tim Berners-Lee'],c:2,e:'Tim Berners-Lee, informatico inglese, ricercatore al CERN!'},
+{q:'Cos\'è l\'HTML?',o:['Un browser','Un linguaggio per creare pagine web','Un tipo di connessione'],c:1,e:'HTML = HyperText Markup Language, inventato da Tim per organizzare documenti!'},
+{q:'Qual è la differenza tra un libro e un ipertesto?',o:['Il libro è più grande','L\'ipertesto permette una lettura non lineare tramite link','Non c\'è differenza'],c:1,e:'Un libro si legge dall\'inizio alla fine. Un ipertesto permette infiniti percorsi!'},
+{q:'Cosa sono i "link"?',o:['Immagini','Pubblicità','Parole chiave che collegano documenti tra loro'],c:2,e:'Link = collegamenti. Cliccandoli passi da un documento all\'altro!'},
+{q:'Cosa fa il browser?',o:['Crea i siti web','Traduce l\'HTML in pagine leggibili sullo schermo','Collega i cavi'],c:1,e:'Chrome, Safari, Firefox... traducono il codice HTML in pagine visibili!'},
+{q:'Cosa sono il "server" e il "client"?',o:['Due tipi di virus','Server = computer che ospita i dati, Client = chi li consulta','Due browser diversi'],c:1,e:'Server = inserviente (offre i dati). Client = cliente (li richiede). Il tuo PC è un client!'},
 ];
+// Video time monitor — stop at 5:08 (308s) when sponsor starts
+let vidTimer=null;
+function vidTimerStart(){if(vidTimer)return;vidTimer=setInterval(()=>{
+if(!vidPlayer||!vidPlayer.getCurrentTime)return;
+const t=vidPlayer.getCurrentTime();
+document.getElementById('vidStatus').textContent=Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0')+' / 5:08';
+if(t>=308){vidPlayer.pauseVideo();vidTimerStop();
+document.getElementById('vidStatus').innerHTML='<i class="ri-check-line"></i> Video completato!';
+}},500);}
+function vidTimerStop(){if(vidTimer){clearInterval(vidTimer);vidTimer=null;}}
+
 function bVQ(){
 document.getElementById('vQuiz').innerHTML=VQ.map((q,i)=>{
-const locked=i>vqDone;
-return`<div class="vq ${i<vqDone?'done':i===vqDone?'active':''}" id="vq${i}" style="${locked?'opacity:.3;pointer-events:none;':''}">
-<div class="vq-time"><i class="ri-time-line"></i> Domanda ${i+1}/${VQ.length}</div>
-<div style="font-weight:700;font-size:.84em;margin:6px 0;line-height:1.4;">${q.q}</div>
-<div style="display:flex;gap:5px;flex-wrap:wrap;">${q.o.map((o,j)=>`<button class="ex-o" onclick="vqAns(${i},${j})">${o}</button>`).join('')}</div>
-<div id="vqfb${i}" style="margin-top:4px;font-size:.76em;font-weight:600;"></div></div>`;}).join('');
-if(vqDone>=VQ.length){const btn=document.getElementById('s1Next');btn.disabled=false;btn.style.opacity='1';btn.innerHTML='Avanti <i class="ri-arrow-right-line"></i>';}}
+const locked=i>vqDone;const done=i<vqDone;const active=i===vqDone;
+return`<div class="vq ${done?'done':active?'active':''}" id="vq${i}" style="${locked?'opacity:.25;pointer-events:none;':''}">
+<div class="vq-time"><i class="${done?'ri-check-line':'ri-time-line'}"></i> Domanda ${i+1}/${VQ.length}</div>
+<div style="font-weight:700;font-size:.82em;margin:5px 0;line-height:1.4;">${q.q}</div>
+<div style="display:flex;gap:4px;flex-wrap:wrap;">${q.o.map((o,j)=>`<button class="ex-o" style="font-size:.75em;" onclick="vqAns(${i},${j})">${o}</button>`).join('')}</div>
+<div id="vqfb${i}" style="margin-top:4px;font-size:.74em;font-weight:600;"></div></div>`;}).join('');
+if(vqDone>=VQ.length){const btn=document.getElementById('s1Next');btn.disabled=false;btn.style.opacity='1';btn.innerHTML='Avanti <i class="ri-arrow-right-line"></i>';}
+else{document.getElementById('s1Next').innerHTML=`${vqDone}/${VQ.length} completate <i class="ri-lock-line"></i>`;};
+// Scroll to active question
+setTimeout(()=>{const el=document.getElementById('vq'+vqDone);if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},100);}
 window.vqAns=function(qi,ch){if(qi!==vqDone)return;
 const q=VQ[qi];const el=document.getElementById('vq'+qi);
 el.querySelectorAll('.ex-o').forEach((b,i)=>{b.disabled=true;if(i===q.c)b.classList.add('ok');if(i===ch&&i!==q.c)b.classList.add('no');});
@@ -393,11 +454,64 @@ else{fb.innerHTML='<span style="color:var(--mc-red);">✗ -20 XP — '+q.e+'</sp
 el.classList.remove('active');el.classList.add('done');vqDone++;saveGame();
 setTimeout(()=>bVQ(),800);};
 
+// ═══ ROAD VISUALIZATION ═══
+function buildRoad(){
+const roads=[
+{n:'Stradina sterrata (ADSL 7 Mbps)',spd:12,c:'var(--mc-dirt)',lanes:1,bg:'#5A4010'},
+{n:'Provinciale (4G ~50 Mbps)',spd:5,c:'var(--mc-orange)',lanes:2,bg:'#7A4A08'},
+{n:'Autostrada (Fibra 100)',spd:2.5,c:'var(--mc-blue)',lanes:3,bg:'#2A3388'},
+{n:'6 corsie (Fibra 1 Gbps)',spd:1,c:'var(--mc-green)',lanes:4,bg:'#2D6B1A'},
+{n:'Pista da corsa (5G)',spd:.6,c:'var(--mc-red)',lanes:5,bg:'#7A1F1A'},
+];
+const el=document.getElementById('roadViz');if(!el)return;
+el.innerHTML=roads.map(r=>{
+let lanes='';for(let l=0;l<r.lanes;l++){
+const cars=Array(4).fill(0).map((_,i)=>{const colors=['var(--mc-gold)','var(--mc-green)','var(--mc-orange)','var(--mc-blue)'];
+return`<div style="position:absolute;width:18px;height:12px;background:${colors[i%4]};animation:drive ${r.spd+Math.random()}s linear infinite;animation-delay:${i*r.spd/4+Math.random()}s;top:${3+Math.random()*14}px;"></div>`;}).join('');
+lanes+=`<div style="height:30px;display:flex;align-items:center;position:relative;overflow:hidden;background:${l%2===0?r.bg:r.bg+'CC'};border-bottom:1px solid rgba(255,255,255,.05);">${cars}</div>`;}
+return`<div style="margin-bottom:2px;position:relative;">${lanes}<div style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-weight:800;font-size:.52em;color:rgba(255,255,255,.7);z-index:2;text-shadow:1px 1px 0 rgba(0,0,0,.5);">${r.n}</div></div>`;}).join('');
+}
+
+// ═══ DOWNLOAD CALCULATOR ═══
+function dlCalc(){
+const mb=parseFloat(document.getElementById('dlFile').value);
+const mbps=parseFloat(document.getElementById('dlConn').value);
+const sec=(mb*8)/mbps;
+let display;
+if(sec<60)display=Math.round(sec)+' sec';
+else if(sec<3600)display=Math.floor(sec/60)+' min '+Math.round(sec%60)+' sec';
+else display=Math.floor(sec/3600)+' ore '+Math.floor((sec%3600)/60)+' min';
+const names={5:'Foto 5 MB',700:'Film SD 700 MB',5000:'Film HD 5 GB',50000:'Gioco 50 GB'};
+document.getElementById('dlResult').innerHTML=`<div><i class="ri-download-line"></i> ${names[mb]||mb+' MB'}</div><div style="font-size:1.3em;margin:4px 0;">${display}</div><div style="font-size:.7em;opacity:.6;">${mbps} Mbps → ${(mbps/8).toFixed(1)} MB/s reali</div>`;
+}
+
+// ═══ DNS GAME ═══
+function bDns(){
+const pairs=[{n:'google.com',ip:'142.250.180.46'},{n:'youtube.com',ip:'142.250.185.110'},{n:'wikipedia.org',ip:'208.80.154.224'},{n:'whatsapp.com',ip:'157.240.25.53'},{n:'instagram.com',ip:'157.240.1.174'}];
+let dIdx=0,dScore=0;
+function rDns(){if(dIdx>=pairs.length){document.getElementById('dnsGame').innerHTML=`<div class="cc tc" style="border-color:var(--mc-green);"><div style="font-weight:900;font-size:.9em;">DNS completato! ${dScore}/${pairs.length} corretti ${bk(dScore*2,'var(--mc-green)')}</div></div>`;return;}
+const p=pairs[dIdx];const fake1=pairs[(dIdx+1)%pairs.length].ip;const fake2=pairs[(dIdx+2)%pairs.length].ip;
+const opts=[p.ip,fake1,fake2].sort(()=>Math.random()-.5);
+document.getElementById('dnsGame').innerHTML=`<div class="cc">
+<div style="font-weight:800;font-size:.85em;margin-bottom:8px;">Richiesta ${dIdx+1}/${pairs.length}: <span style="color:var(--mc-green);font-size:1.1em;">${p.n}</span> → ???</div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">${opts.map(o=>`<button class="ex-o" onclick="dnsAns('${o}','${p.ip}')">${o}</button>`).join('')}</div>
+<div id="dnsFb" style="margin-top:6px;"></div></div>`;}
+window.dnsAns=function(ch,co){if(ch===co){dScore++;aX(20);document.getElementById('dnsFb').innerHTML='<div style="color:var(--mc-green);font-weight:700;font-size:.82em;">✓ Corretto! +20 XP '+bk(2,'var(--mc-green)')+'</div>';sndCorrect();}
+else{Z.x=Math.max(0,Z.x-20);rT();rL();document.getElementById('dnsFb').innerHTML='<div style="color:var(--mc-red);font-weight:700;font-size:.82em;">✗ Era '+co+' — -20 XP '+bk(2,'var(--mc-red)')+'</div>';sndWrong();}
+dIdx++;setTimeout(rDns,1200);};rDns();}
+
 // ═══ JOURNEY ═══
-function buildJourney(){document.getElementById('journeyViz').innerHTML=`<div style="font-weight:800;font-size:.85em;margin-bottom:8px;"><i class="ri-route-line"></i> Il viaggio di un messaggio</div>
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:.72em;text-align:center;">
-${[{n:'📱 Telefono',c:'var(--mc-blue)'},{n:'📡 Router',c:'var(--mc-green)'},{n:'🏢 ISP',c:'var(--mc-stone)'},{n:'🖥️ Server',c:'var(--mc-orange)'},{n:'🏢 ISP amico',c:'var(--mc-stone)'},{n:'📱 Amico',c:'var(--mc-blue)'}].map(n=>`<div style="padding:8px;background:${n.c}12;border:2px solid ${n.c}22;min-width:60px;"><div>${n.n}</div></div>`).join('<div style="font-size:1.2em;">→</div>')}</div>
-<div class="tip"><i class="ri-information-line"></i> Il messaggio viene spezzato in <strong>pacchetti</strong> e riassemblato all'arrivo!</div>`;}
+function buildJourney(){document.getElementById('journeyViz').innerHTML=`<h3 style="margin-top:0;"><i class="ri-route-line"></i> Il viaggio di un messaggio WhatsApp</h3>
+<div style="position:relative;padding:20px 0;overflow-x:auto;">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:4px;min-width:600px;">
+${[{n:'📱 Il tuo<br>telefono',c:'var(--mc-blue)'},{n:'📡 Router<br>Wi-Fi',c:'var(--mc-green)'},{n:'🏢 ISP<br>(Operatore)',c:'var(--mc-stone)'},{n:'🖥️ Server<br>WhatsApp',c:'var(--mc-orange)'},{n:'🏢 ISP<br>amico',c:'var(--mc-stone)'},{n:'📱 Telefono<br>amico',c:'var(--mc-blue)'}].map((n,i,a)=>
+`<div style="text-align:center;flex:0 0 auto;">
+<div style="width:70px;height:70px;background:${n.c};display:flex;align-items:center;justify-content:center;margin:0 auto 4px;border:2px solid rgba(0,0,0,.15);">
+<span style="font-size:1.6em;">${n.n.split('<br>')[0]}</span></div>
+<div style="font-size:.6em;font-weight:700;color:var(--tx);line-height:1.3;">${n.n.replace(n.n.split('<br>')[0]+'<br>','')}</div>
+</div>${i<a.length-1?'<div style="flex:1;height:4px;background:var(--mc-gold);position:relative;min-width:20px;"><div style="width:10px;height:10px;background:var(--mc-green);position:absolute;top:-3px;animation:pktSlide '+(2+i*.3)+'s ease-in-out infinite;"></div></div>':''}`).join('')}
+</div></div>
+<div class="tip"><i class="ri-information-line"></i> Il messaggio viene spezzato in <strong>pacchetti</strong>, ognuno viaggia per la strada più veloce, e vengono riassemblati all'arrivo. Un messaggio Italia→Giappone: <strong>millisecondi</strong>!</div>`;}
 
 // ═══ EXERCISES ═══
 function bS2(){const qs=[
@@ -471,8 +585,15 @@ else if(manSel.size<3){document.getElementById('manMsg').textContent='Scegli alm
 const MUS_IDS=['2rn-vMbFglI','_WRKbu5j0O0','O4N0Fsnsr4I','HMynfIRQBz8','NnQksQS6buo','Zh-ZUrc-aLI','yzkhvgXosJs'];
 let musOn=true,musPlayer=null,musCur=-1,musReady=false,musQueued=-1;
 function musLoadAPI(){const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t);}
-window.onYouTubeIframeAPIReady=function(){const d=document.createElement('div');d.id='musYT';d.style.cssText='position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0;pointer-events:none;';document.body.appendChild(d);
-musPlayer=new YT.Player('musYT',{height:'1',width:'1',playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,modestbranding:1,playsinline:1,rel:0},events:{onReady:function(){musReady=true;if(musQueued>=0)musPlay(musQueued);},onStateChange:function(e){if(e.data===YT.PlayerState.ENDED&&musPlayer)musPlayer.playVideo();}}});};
+window.onYouTubeIframeAPIReady=function(){
+// Music player
+const d=document.createElement('div');d.id='musYT';d.style.cssText='position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0;pointer-events:none;';document.body.appendChild(d);
+musPlayer=new YT.Player('musYT',{height:'1',width:'1',playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,modestbranding:1,playsinline:1,rel:0},events:{onReady:function(){musReady=true;if(musQueued>=0)musPlay(musQueued);},onStateChange:function(e){if(e.data===YT.PlayerState.ENDED&&musPlayer)musPlayer.playVideo();}}});
+// Video player — attach to existing iframe
+vidPlayer=new YT.Player('ytPlayer',{events:{
+onStateChange:function(e){if(e.data===YT.PlayerState.PLAYING)vidTimerStart();if(e.data===YT.PlayerState.PAUSED||e.data===YT.PlayerState.ENDED)vidTimerStop();},
+onReady:function(){}}});
+};
 function musPlay(i){if(!musOn||i<=1){musStop();return;}const t=i-2;if(t<0||t>=MUS_IDS.length)return;if(musCur===t)return;musCur=t;if(!musReady){musQueued=i;return;}musPlayer.loadVideoById({videoId:MUS_IDS[t]});musPlayer.setVolume(30);}
 function musStop(){if(musReady&&musPlayer)try{musPlayer.stopVideo();}catch(e){}musCur=-1;}
 function toggleMusic(){musOn=!musOn;document.getElementById('musicIco').className=musOn?'ri-volume-up-line':'ri-volume-mute-line';document.getElementById('musicLbl').textContent=musOn?'ON':'OFF';
