@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>L'Indirizzo Digitale</title>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+:root{--lr:#E3000B;--lb:#0055BF;--ly:#FFED00;--lg:#00852B;--lo:#FF7E14;--lp:#8B4DAB;
+--bg:#F4F0E5;--card:#FFFFFF;--bd:#D6D1C4;--tx:#1A1A1A;--tx2:#6B6560;--tx3:#A09A90;
+--gbg:rgba(0,133,43,.07);--rbg:rgba(227,0,11,.05);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;font-family:'Rubik',sans-serif;color:var(--tx);background:var(--bg);}
+.app{display:grid;grid-template-columns:220px 1fr;grid-template-rows:90px 1fr;height:100vh;}
+
+/* TOPBAR */
+.tn{grid-column:1/-1;background:var(--ly);display:flex;align-items:flex-start;padding:8px 24px 0;z-index:10;position:relative;overflow:visible;}
+.tn-t{font-weight:900;font-size:1.1em;color:var(--tx);display:flex;align-items:center;gap:10px;flex-shrink:0;padding-top:8px;}
+.tabs{display:flex;gap:6px;margin-left:20px;overflow-x:visible;scrollbar-width:none;flex:1;justify-content:center;align-items:flex-start;}.tabs::-webkit-scrollbar{display:none;}
+.tab{border:none;background:var(--lb);color:#fff;font-family:'Rubik';font-weight:800;
+font-size:.78em;padding:12px 20px;border-radius:2px;cursor:pointer;transition:all .1s;white-space:nowrap;
+display:flex;align-items:center;gap:5px;position:relative;text-transform:uppercase;letter-spacing:.3px;margin-top:48px;}
+.tab:hover{filter:brightness(1.1);}.tab:active{filter:brightness(.9);}
+.tab.a{background:var(--lr);}
+.tab.a .tab-studs span{background:var(--lr);}
+.tab-studs{position:absolute;top:-4px;left:0;right:0;display:flex;justify-content:space-evenly;pointer-events:none;padding:0 10px;}
+.tab-studs span{width:10px;height:4px;border-radius:1px;display:block;background:var(--lb);}
+
+/* SIDEBAR */
+.sb{background:var(--ly);color:var(--tx);display:flex;flex-direction:column;box-shadow:3px 0 12px rgba(0,0,0,.1);z-index:5;overflow-y:auto;}
+.sb::-webkit-scrollbar{width:3px;}.sb::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:2px;}
+.sb-p{padding:14px 12px;text-align:center;border-bottom:2px solid rgba(0,0,0,.08);}
+.sb-av{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.5);margin:0 auto 6px;display:flex;align-items:center;justify-content:center;font-size:1.3em;border:3px solid var(--lb);}
+.sb-nm{font-weight:900;font-size:.85em;}.sb-rk{font-size:.62em;color:rgba(0,0,0,.45);font-weight:600;margin-top:1px;}
+.sb-bar{margin:8px 0 3px;height:8px;background:rgba(0,0,0,.1);border-radius:4px;overflow:hidden;}
+.sb-bf{height:100%;border-radius:4px;background:var(--lb);transition:width .5s;}
+.sb-xl{font-size:.52em;color:rgba(0,0,0,.35);font-weight:600;display:flex;justify-content:space-between;}
+.sb-h{padding:10px 12px 4px;font-size:.58em;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;color:rgba(0,0,0,.3);}
+.sb-lb{padding:2px 8px;flex:1;}
+.sb-lr{display:flex;align-items:center;gap:6px;padding:8px 10px;border-radius:6px;margin-bottom:4px;
+background:var(--lb);color:#fff;box-shadow:0 4px 0 #003D8C,inset 0 1px 0 rgba(255,255,255,.15);font-weight:700;position:relative;transition:transform .4s ease,opacity .4s ease;}
+.sb-lr::before{content:'';position:absolute;top:-3px;left:10px;width:8px;height:3px;border-radius:2px 2px 0 0;background:inherit;}
+.sb-lr::after{content:'';position:absolute;top:-3px;right:10px;width:8px;height:3px;border-radius:2px 2px 0 0;background:inherit;}
+.sb-lr.me{background:var(--lg);box-shadow:0 4px 0 #006420,inset 0 1px 0 rgba(255,255,255,.15);}
+.sb-lr.boss{background:var(--lr);box-shadow:0 4px 0 #B8000A,inset 0 1px 0 rgba(255,255,255,.15);}
+.sb-lr.up{animation:lbUp .5s ease;}.sb-lr.down{animation:lbDown .5s ease;}.sb-lr.new-pos{animation:lbPulse .4s ease;}
+@keyframes lbUp{0%{transform:translateY(8px);opacity:.5;}100%{transform:translateY(0);opacity:1;}}
+@keyframes lbDown{0%{transform:translateY(-8px);opacity:.5;}100%{transform:translateY(0);opacity:1;}}
+@keyframes lbPulse{0%{transform:scale(1);}50%{transform:scale(1.04);}100%{transform:scale(1);}}
+.sb-pos{font-weight:900;font-size:.68em;width:16px;text-align:center;opacity:.6;}
+.sb-mv{font-size:.55em;margin-left:2px;font-weight:800;}.sb-mv.up{color:#90EE90;}.sb-mv.dn{color:#FF9090;}
+.sb-nm2{flex:1;font-size:.72em;font-weight:700;}.sb-xp{font-weight:900;font-size:.68em;opacity:.8;}
+
+/* MAIN */
+.mn{overflow-y:auto;background:var(--bg);}.mn::-webkit-scrollbar{width:5px;}.mn::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
+.mi{padding:20px 24px 60px;max-width:900px;margin:0 auto;}
+.sec{display:none;}.sec.a{display:block;animation:fi .25s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h1{font-size:1.25em;font-weight:900;margin-bottom:6px;}
+h2{font-size:.88em;font-weight:800;color:var(--lb);margin:18px 0 8px;display:flex;align-items:center;gap:5px;}
+h3{font-size:.78em;font-weight:700;color:var(--tx2);margin:12px 0 6px;}
+.sub{color:var(--tx2);font-size:.84em;margin-bottom:14px;line-height:1.65;}
+.cg{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
+.cc{background:var(--card);border-radius:12px;padding:18px;border:2px solid var(--bd);box-shadow:0 2px 8px rgba(0,0,0,.04);}
+.tip{padding:10px 14px;border-radius:8px;font-size:.8em;line-height:1.55;margin:8px 0;background:#FFF8D6;border-left:3px solid var(--ly);}
+.btn{padding:9px 20px;border-radius:8px;border:none;font-family:'Rubik';font-weight:800;font-size:.78em;cursor:pointer;transition:all .1s;color:#fff;display:inline-flex;align-items:center;gap:5px;background:var(--lb);box-shadow:0 4px 0 #003D8C;text-transform:uppercase;letter-spacing:.3px;}
+.btn:hover{transform:translateY(-1px);}.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #003D8C;}
+.br{background:var(--lr);box-shadow:0 4px 0 #B8000A;}.bg{background:var(--lg);box-shadow:0 4px 0 #006420;}
+.by{background:var(--ly);color:#000;box-shadow:0 4px 0 #D4C700;}.bo{background:var(--lo);box-shadow:0 4px 0 #CC6510;}
+.bsm{padding:6px 12px;font-size:.66em;}.btn:disabled{opacity:.3;transform:none!important;}
+.bgh{background:#fff;color:var(--tx);box-shadow:0 3px 0 var(--bd);border:2px solid var(--bd);}
+.tc{text-align:center;}.mt{margin-top:14px;}
+
+/* EXERCISES */
+.ib{display:inline-flex;gap:1px;vertical-align:middle;margin-left:4px;}
+.ib b{width:10px;height:7px;border-radius:1.5px;display:inline-block;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 0 rgba(0,0,0,.12);}
+.ex{background:var(--card);border-radius:10px;padding:14px;margin-bottom:10px;border:2px solid var(--bd);border-left:5px solid var(--lb);position:relative;}
+.ex.dok{border-left-color:var(--lg);background:var(--gbg);}.ex.dno{border-left-color:var(--lr);background:var(--rbg);}
+.ex-l{font-size:.55em;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;display:flex;align-items:center;gap:4px;}
+.ex-bricks{display:inline-flex;gap:1px;}.ex-brk{width:8px;height:6px;border-radius:1px;background:var(--lb);box-shadow:inset 0 1px 0 rgba(255,255,255,.3);}
+.ex.dok .ex-brk{background:var(--lg);}
+.ex-q{font-weight:700;font-size:.86em;margin-bottom:8px;line-height:1.45;}
+.ex-os{display:flex;gap:6px;flex-wrap:wrap;}
+.ex-o{padding:8px 14px;border-radius:8px;border:2px solid var(--bd);background:#fff;color:var(--tx);font-weight:700;font-size:.8em;cursor:pointer;transition:all .1s;box-shadow:0 2px 0 var(--bd);}
+.ex-o:hover{border-color:var(--lb);transform:translateY(-1px);}.ex-o:active{transform:translateY(1px);box-shadow:none;}
+.ex-o.ok{border-color:var(--lg);background:var(--gbg);color:var(--lg);}.ex-o.no{border-color:var(--lr);background:var(--rbg);color:var(--lr);}
+.ex-o:disabled{pointer-events:none;}
+.ex-fb{margin-top:6px;font-size:.78em;font-weight:600;padding:8px 10px;border-radius:6px;display:none;align-items:center;gap:6px;}
+.ex-fb.s{display:flex;}.ex-fb.fok{background:var(--gbg);color:var(--lg);}.ex-fb.fno{background:var(--rbg);color:var(--lr);}
+.fb-bricks{display:inline-flex;gap:2px;margin-left:4px;}
+.fb-brk{width:10px;height:8px;border-radius:2px;display:inline-block;animation:brickPop .3s ease;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.3);}
+@keyframes brickPop{from{transform:scale(0) translateY(8px);opacity:0;}to{transform:scale(1) translateY(0);opacity:1;}}
+
+/* HOME */
+.home{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100%;padding:24px;gap:8px;background:var(--bg);}
+.vid-lock{position:relative;user-select:none;-webkit-user-select:none;}
+.vid-block-top{position:absolute;top:0;right:0;width:120px;height:40px;z-index:5;cursor:default;}
+.vid-block-bot{position:absolute;bottom:0;left:0;right:0;height:42px;z-index:5;cursor:default;}
+.vw{position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:10px;border:2px solid var(--bd);}
+.vw iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:none;}
+
+/* ROAD VIZ */
+.road{border-radius:10px;overflow:hidden;margin:8px 0;position:relative;}
+.road-lane{height:36px;display:flex;align-items:center;position:relative;overflow:hidden;border-bottom:1px solid rgba(255,255,255,.1);}
+.road-car{position:absolute;width:20px;height:14px;border-radius:3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.3);animation:drive linear infinite;}
+.road-car::before{content:'';position:absolute;top:-2px;left:3px;width:5px;height:2px;border-radius:1px 1px 0 0;background:inherit;}
+.road-car::after{content:'';position:absolute;top:-2px;right:3px;width:5px;height:2px;border-radius:1px 1px 0 0;background:inherit;}
+@keyframes drive{from{left:-30px;}to{left:100%;}}
+.road-label{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-weight:800;font-size:.55em;color:rgba(255,255,255,.8);z-index:2;text-shadow:0 1px 2px rgba(0,0,0,.3);}
+
+/* PACKET JOURNEY */
+.pkt-track{position:relative;height:60px;background:#f5f0e5;border-radius:8px;margin:6px 0;border:1px solid var(--bd);overflow:hidden;}
+.pkt-node{position:absolute;top:50%;transform:translateY(-50%);text-align:center;z-index:3;}
+.pkt-node i{font-size:1.2em;display:block;}.pkt-node span{font-size:.5em;font-weight:700;}
+.pkt-dot{width:12px;height:8px;border-radius:2px;position:absolute;top:50%;transform:translateY(-50%);z-index:2;animation:pktMove 3s ease-in-out infinite;}
+@keyframes pktMove{0%{left:8%;}50%{left:88%;}100%{left:8%;}}
+
+/* BEHAVIORAL MONITOR */
+.bm-popup{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:200;background:var(--card);border-radius:16px;padding:24px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.35);border:4px solid var(--lr);animation:bmIn .3s ease;max-width:380px;width:90%;}
+.bm-overlay{position:fixed;inset:0;z-index:199;background:rgba(0,0,0,.4);}
+@keyframes bmIn{from{transform:translate(-50%,-50%) scale(.8);opacity:0;}to{transform:translate(-50%,-50%) scale(1);opacity:1;}}
+.sel{width:100%;padding:7px 10px;border-radius:8px;background:#FAFAF5;border:2px solid var(--bd);font-family:'Rubik';font-weight:600;font-size:.76em;outline:none;cursor:pointer;}
+@media(max-width:768px){.app{grid-template-columns:1fr;}.sb{display:none;}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="tn">
+<div class="tn-t"><div><div style="display:flex;align-items:center;gap:8px;"><i class="ri-global-line"></i> L'Indirizzo Digitale</div><div style="font-size:.5em;font-weight:600;opacity:.5;letter-spacing:1px;">SACRAFAMIGLIA EDU <span style="cursor:default;margin-left:6px;" onclick="document.getElementById('infoDoc').style.display='flex';"><i class="ri-information-line"></i> Info Docente</span></div></div></div>
+<div class="tabs" id="tabs"></div>
+<button id="musicBtn" onclick="toggleMusic()" style="margin-left:8px;flex-shrink:0;border:none;background:var(--lb);color:#fff;font-family:'Rubik';font-weight:800;font-size:.62em;padding:6px 10px;border-radius:3px;cursor:pointer;display:flex;align-items:center;gap:4px;position:relative;box-shadow:0 3px 0 #003D8C,inset 0 1px 0 rgba(255,255,255,.15);">
+<span style="position:absolute;top:-3px;left:4px;width:6px;height:3px;border-radius:1px 1px 0 0;background:var(--lb);"></span>
+<span style="position:absolute;top:-3px;right:4px;width:6px;height:3px;border-radius:1px 1px 0 0;background:var(--lb);"></span>
+<i class="ri-volume-up-line" id="musicIco"></i><span id="musicLbl">ON</span></button>
+</div>
+<div class="sb">
+<div class="sb-p"><div class="sb-av" id="sAv"><i class="ri-shield-star-line"></i></div><div class="sb-nm" id="sNm">PLAYER</div><div class="sb-rk" id="sRk">Esploratore</div>
+<div class="sb-bar"><div class="sb-bf" id="sXF" style="width:0%"></div></div><div class="sb-xl"><span id="sXC">0 XP</span><span id="sXN">→ 80</span></div>
+<div id="sBricks" style="display:flex;justify-content:center;gap:1px;flex-wrap:wrap;margin-top:6px;min-height:10px;"></div></div>
+<div class="sb-h"><i class="ri-trophy-line"></i> Classifica</div><div class="sb-lb" id="lb"></div>
+<div style="padding:10px 12px;margin-top:auto;text-align:center;font-size:.5em;color:rgba(0,0,0,.3);line-height:1.6;border-top:1px solid rgba(0,0,0,.06);">
+<div><strong>SacraFamiglia education</strong></div>
+<div>A.D. Andrea Cerioli</div>
+<div style="display:flex;align-items:center;justify-content:center;gap:3px;margin-top:2px;">
+<i class="ri-creative-commons-line"></i><i class="ri-creative-commons-by-line"></i><i class="ri-creative-commons-nc-line"></i><i class="ri-creative-commons-sa-line"></i> BY-NC-SA 4.0</div>
+</div>
+</div>
+<div class="mn" id="MA">
+
+<!-- 0: HOME -->
+<div id="s0" class="sec a">
+<div class="home">
+<h1 style="font-size:1.6em;text-align:center;">L'Indirizzo Digitale</h1>
+<p style="color:var(--tx2);font-size:.88em;text-align:center;margin-bottom:12px;">Come funziona Internet? Scoprilo giocando!</p>
+<div class="vid-lock" style="width:100%;max-width:700px;"><div class="vw"><iframe src="https://www.youtube.com/embed/wT6wF0TiKVk?rel=0&playsinline=1&modestbranding=1&disablekb=1&iv_load_policy=3&fs=0" allow="accelerometer;autoplay;encrypted-media;gyroscope;picture-in-picture" loading="lazy"></iframe>
+<div class="vid-block-top"></div><div class="vid-block-bot"></div></div></div>
+<button class="btn bo" style="padding:14px 40px;font-size:.95em;margin-top:12px;" onclick="G(1)"><i class="ri-play-circle-line"></i> Inizia!</button>
+</div>
+</div>
+
+<!-- 1: INDIRIZZI IP -->
+<div id="s1" class="sec"><div class="mi">
+<h1><i class="ri-home-wifi-line" style="color:var(--lb);"></i> Gli Indirizzi di Internet</h1>
+<p class="sub">Ogni dispositivo collegato a Internet ha un <strong>indirizzo IP</strong> — come l'indirizzo di casa tua. Senza indirizzo, nessuno sa dove consegnare i dati!</p>
+<div class="cc">
+<h3 style="margin-top:0;"><i class="ri-map-pin-line"></i> Indirizzo di casa vs Indirizzo IP</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:.84em;">
+<div style="padding:12px;background:#F5F0FF;border-radius:8px;text-align:center;"><i class="ri-home-line" style="font-size:1.5em;color:var(--lp);display:block;margin-bottom:4px;"></i><strong>Via Roma 15, Orzinuovi</strong><div style="font-size:.78em;color:var(--tx2);margin-top:4px;">Identifica una casa nel mondo reale</div></div>
+<div style="padding:12px;background:rgba(0,85,191,.05);border-radius:8px;text-align:center;"><i class="ri-computer-line" style="font-size:1.5em;color:var(--lb);display:block;margin-bottom:4px;"></i><strong>192.168.1.25</strong><div style="font-size:.78em;color:var(--tx2);margin-top:4px;">Identifica un dispositivo in rete</div></div>
+</div>
+<div class="tip" style="margin-top:10px;"><i class="ri-information-line"></i> Un IP è fatto di <strong>4 numeri da 0 a 255</strong> separati da punti. Es: <strong>192.168.1.1</strong> oppure <strong>8.8.8.8</strong> (il DNS di Google).</div>
+</div>
+<div class="cc mt">
+<h3 style="margin-top:0;"><i class="ri-lock-line" style="color:var(--lo);"></i> IP Privato vs IP Pubblico</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:.84em;">
+<div style="padding:12px;background:rgba(255,126,20,.05);border-radius:8px;"><div style="font-weight:800;color:var(--lo);margin-bottom:4px;">IP Privato</div>Il tuo indirizzo <strong>dentro casa</strong> (nella rete Wi-Fi). Tipo il numero dell'appartamento. Es: 192.168.1.25</div>
+<div style="padding:12px;background:rgba(0,133,43,.05);border-radius:8px;"><div style="font-weight:800;color:var(--lg);margin-bottom:4px;">IP Pubblico</div>L'indirizzo <strong>visibile da Internet</strong>. Tipo il numero civico visto dalla strada. Es: 87.12.45.200</div>
+</div>
+</div>
+<h2><i class="ri-checkbox-circle-line"></i> Esercizi sugli IP</h2><div id="s1ex"></div>
+<div class="tc mt"><button class="btn" onclick="G(2)">Avanti <i class="ri-arrow-right-line"></i></button></div>
+</div></div>
+
+<!-- 2: LE STRADE (Connessioni) -->
+<div id="s2" class="sec"><div class="mi">
+<h1><i class="ri-road-map-line" style="color:var(--lo);"></i> Le Strade di Internet</h1>
+<p class="sub">I dati viaggiano su <strong>strade</strong> di diversa grandezza. Un'autostrada a 6 corsie è velocissima, una stradina sterrata è lentissima.</p>
+
+<div class="cc">
+<h3 style="margin-top:0;"><i class="ri-error-warning-line" style="color:var(--lr);"></i> ATTENZIONE: 5G ≠ 5 Gigabyte!</h3>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:.82em;margin:10px 0;">
+<div style="padding:10px;background:var(--rbg);border-radius:8px;text-align:center;border:2px solid rgba(227,0,11,.15);"><div style="font-weight:900;font-size:1.2em;color:var(--lr);">5G</div><div style="font-weight:700;">Quinta Generazione</div><div style="font-size:.75em;color:var(--tx2);">Tipo di connessione mobile (come 3G, 4G)</div></div>
+<div style="padding:10px;background:rgba(0,85,191,.05);border-radius:8px;text-align:center;border:2px solid rgba(0,85,191,.15);"><div style="font-weight:900;font-size:1.2em;color:var(--lb);">5 GB</div><div style="font-weight:700;">5 Gigabyte</div><div style="font-size:.75em;color:var(--tx2);">Quantità di spazio (come nel Peso Digitale!)</div></div>
+<div style="padding:10px;background:rgba(0,133,43,.05);border-radius:8px;text-align:center;border:2px solid rgba(0,133,43,.15);"><div style="font-weight:900;font-size:1.2em;color:var(--lg);">5 Gbps</div><div style="font-weight:700;">5 Gigabit/secondo</div><div style="font-size:.75em;color:var(--tx2);">Velocità di trasferimento dati</div></div>
+</div>
+<div class="tip"><i class="ri-lightbulb-line"></i> <strong>G</strong> in 5G = Generazione. <strong>GB</strong> = spazio. <strong>Gbps</strong> = velocità. Tre cose completamente diverse!</div>
+</div>
+
+<div class="cc mt">
+<h3 style="margin-top:0;"><i class="ri-road-map-line"></i> L'autostrada dei dati</h3>
+<div class="road" id="roadViz" style="background:#2D2D44;padding:8px 0;"></div>
+<div style="font-size:.68em;color:var(--tx3);text-align:center;margin-top:4px;">I mattoncini sono i tuoi dati: più corsie = più dati passano insieme = più veloce!</div>
+</div>
+
+<h2><i class="ri-checkbox-circle-line"></i> Esercizi sulle connessioni</h2><div id="s2ex"></div>
+<div class="tc mt"><button class="btn" onclick="G(3)">Avanti <i class="ri-arrow-right-line"></i></button></div>
+</div></div>
+
+<!-- 3: DNS -->
+<div id="s3" class="sec"><div class="mi">
+<h1><i class="ri-contacts-book-line" style="color:var(--lg);"></i> Il Postino: il DNS</h1>
+<p class="sub">Tu scrivi <strong>google.com</strong> — ma il tuo computer ha bisogno del numero IP. Chi traduce il nome nell'indirizzo? Il <strong>DNS</strong> (Domain Name System): la rubrica telefonica di Internet!</p>
+<div class="cc">
+<div style="display:flex;align-items:center;justify-content:center;gap:12px;padding:12px;flex-wrap:wrap;">
+<div style="padding:10px 16px;background:rgba(0,133,43,.06);border-radius:8px;font-weight:800;font-size:.9em;color:var(--lg);">google.com</div>
+<div><i class="ri-arrow-right-line" style="font-size:1.3em;color:var(--tx3);"></i></div>
+<div style="padding:10px 16px;background:rgba(0,85,191,.06);border-radius:8px;font-weight:800;font-size:.9em;color:var(--lb);">DNS</div>
+<div><i class="ri-arrow-right-line" style="font-size:1.3em;color:var(--tx3);"></i></div>
+<div style="padding:10px 16px;background:rgba(255,126,20,.06);border-radius:8px;font-weight:800;font-size:.9em;color:var(--lo);">142.250.180.46</div>
+</div>
+<div class="tip"><i class="ri-contacts-line"></i> Senza DNS dovresti ricordare numeri come 142.250.180.46 per visitare Google. Come chiamare qualcuno senza rubrica!</div>
+</div>
+<h2><i class="ri-gamepad-line"></i> Gioco: Sei il DNS!</h2>
+<p class="sub">Arrivano richieste — traduci il nome nel numero IP corretto!</p>
+<div id="dnsGame"></div>
+<h2><i class="ri-checkbox-circle-line"></i> Quiz DNS</h2><div id="s3ex"></div>
+<div class="tc mt"><button class="btn" onclick="G(4)">Avanti <i class="ri-arrow-right-line"></i></button></div>
+</div></div>
+
+<!-- 4: URL -->
+<div id="s4" class="sec"><div class="mi">
+<h1><i class="ri-link" style="color:var(--lp);"></i> L'Indirizzo Completo: l'URL</h1>
+<p class="sub">Un URL è l'indirizzo completo di una pagina web. Come l'indirizzo sulla busta di una lettera, ha più parti.</p>
+<div class="cc">
+<div style="background:#1A1A1A;border-radius:8px;padding:14px;font-family:monospace;font-size:.9em;color:#fff;text-align:center;word-break:break-all;margin-bottom:10px;">
+<span style="color:#00D68F;">https://</span><span style="color:#FFD93D;">www.scuola.edu</span><span style="color:#FF6B6B;">/classe3</span><span style="color:#6BCBFF;">?materia=scienze</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:.78em;">
+<div style="padding:8px;background:rgba(0,214,143,.06);border-radius:6px;text-align:center;"><div style="font-weight:800;color:#00D68F;">https://</div>Protocollo<br><span style="font-size:.8em;color:var(--tx3);">La sicurezza</span></div>
+<div style="padding:8px;background:rgba(255,217,61,.06);border-radius:6px;text-align:center;"><div style="font-weight:800;color:#E6C400;">www.scuola.edu</div>Dominio<br><span style="font-size:.8em;color:var(--tx3);">L'indirizzo</span></div>
+<div style="padding:8px;background:rgba(255,107,107,.06);border-radius:6px;text-align:center;"><div style="font-weight:800;color:#FF6B6B;">/classe3</div>Percorso<br><span style="font-size:.8em;color:var(--tx3);">La stanza</span></div>
+<div style="padding:8px;background:rgba(107,203,255,.06);border-radius:6px;text-align:center;"><div style="font-weight:800;color:#6BCBFF;">?materia=</div>Parametri<br><span style="font-size:.8em;color:var(--tx3);">I dettagli</span></div>
+</div>
+</div>
+<h2><i class="ri-checkbox-circle-line"></i> Esercizi URL</h2><div id="s4ex"></div>
+<div class="tc mt"><button class="btn" onclick="G(5)">Avanti <i class="ri-arrow-right-line"></i></button></div>
+</div></div>
+
+<!-- 5: IL VIAGGIO DEI DATI -->
+<div id="s5" class="sec"><div class="mi">
+<h1><i class="ri-route-line" style="color:var(--lo);"></i> Il Viaggio dei Dati</h1>
+<p class="sub">Quando mandi un messaggio su WhatsApp, quel messaggio fa un viaggio incredibile. Vediamolo!</p>
+<div class="cc" id="journeyViz"></div>
+<h2><i class="ri-checkbox-circle-line"></i> Quiz sul viaggio</h2><div id="s5ex"></div>
+<div class="tc mt"><button class="btn" onclick="G(6)">Avanti <i class="ri-arrow-right-line"></i></button></div>
+</div></div>
+
+<!-- 6: HTTPS -->
+<div id="s6" class="sec"><div class="mi">
+<h1><i class="ri-lock-line" style="color:var(--lg);"></i> La Busta Chiusa: HTTPS</h1>
+<p class="sub">I tuoi dati viaggiano in rete. Ma chi li protegge? La differenza tra <strong>HTTP</strong> e <strong>HTTPS</strong> è la differenza tra una cartolina e una busta sigillata.</p>
+<div class="cg">
+<div class="cc" style="border-color:rgba(227,0,11,.2);">
+<div style="text-align:center;"><i class="ri-mail-open-line" style="font-size:2em;color:var(--lr);"></i></div>
+<div style="font-weight:900;text-align:center;color:var(--lr);margin:4px 0;">HTTP</div>
+<div style="font-size:.82em;text-align:center;color:var(--tx2);">Come una <strong>cartolina</strong>: tutti quelli che la toccano possono leggerla. Il postino, il vicino, chiunque.</div>
+</div>
+<div class="cc" style="border-color:rgba(0,133,43,.2);">
+<div style="text-align:center;"><i class="ri-mail-lock-line" style="font-size:2em;color:var(--lg);"></i></div>
+<div style="font-weight:900;text-align:center;color:var(--lg);margin:4px 0;">HTTPS</div>
+<div style="font-size:.82em;text-align:center;color:var(--tx2);">Come una <strong>busta sigillata</strong>: solo tu e il destinatario potete leggere il contenuto. Il lucchetto nel browser!</div>
+</div>
+</div>
+<div class="tip mt"><i class="ri-shield-check-line"></i> Controlla sempre il <strong>lucchetto</strong> nella barra del browser prima di inserire password o dati personali!</div>
+<h2><i class="ri-checkbox-circle-line"></i> Quiz HTTPS</h2><div id="s6ex"></div>
+<div class="tc mt"><button class="btn" onclick="G(7)">Avanti <i class="ri-arrow-right-line"></i></button></div>
+</div></div>
+
+<!-- 7: BRICKS (Firewall) -->
+<div id="s7" class="sec"><div class="mi" style="position:relative;overflow:hidden;max-height:calc(100vh - 90px);padding:10px 24px;">
+<div id="biLock" style="position:absolute;inset:0;z-index:20;background:rgba(244,240,229,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;backdrop-filter:blur(2px);border-radius:12px;">
+<i class="ri-lock-line" style="font-size:3em;color:var(--lr);opacity:.6;"></i>
+<div style="font-weight:900;font-size:1.2em;">Gioco bloccato</div>
+<div id="biLockMsg" style="font-size:.88em;color:var(--tx2);text-align:center;max-width:320px;line-height:1.6;"></div>
+<button class="btn" onclick="G(0)"><i class="ri-trophy-line"></i> Vai alla classifica</button>
+</div>
+<div style="display:grid;grid-template-columns:1fr 160px;gap:10px;height:calc(100vh - 120px);">
+<div style="display:flex;flex-direction:column;min-height:0;">
+<div class="cc" style="padding:0;overflow:hidden;border-radius:12px;flex:1;display:flex;flex-direction:column;">
+<div id="biHud" style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#1A1A1A;color:#fff;font-size:.72em;font-weight:700;">
+<div>Missione: <span id="biMis" style="color:var(--ly);">—</span></div>
+<div>Punti: <span id="biPts" style="color:var(--lg);">0</span></div>
+<div>Vite: <span id="biLiv">♥♥♥</span></div>
+</div>
+<canvas id="biCanvas" width="800" height="420" tabindex="0" style="width:100%;flex:1;display:block;background:#0D0D2B;cursor:crosshair;outline:none;"></canvas>
+<div id="biCtrl" style="padding:8px;background:#1A1A1A;text-align:center;">
+<button class="btn by" id="biStart" onclick="biBegin()" style="padding:8px 24px;"><i class="ri-play-circle-line"></i> GIOCA</button>
+</div>
+</div>
+<div id="biEnd" style="display:none;" class="cc tc"></div>
+</div>
+<div style="font-size:.68em;color:var(--tx2);line-height:1.6;padding-top:4px;">
+<div style="font-weight:900;font-size:1.2em;color:var(--tx);margin-bottom:6px;"><i class="ri-shield-line" style="color:var(--lg);"></i> Firewall</div>
+<div style="margin-bottom:10px;font-weight:600;">Sei il firewall! Lascia passare i pacchetti sicuri e blocca malware e spam.</div>
+<div style="padding:8px;background:#FAFAF5;border-radius:6px;border:1px solid var(--bd);margin-bottom:8px;">
+<div style="font-weight:800;margin-bottom:3px;">Tastiera</div>← → muoversi<br>SPAZIO sparare</div>
+<div class="tc"><button class="btn bsm" onclick="G(8)" style="font-size:.7em;">Rifletti <i class="ri-arrow-right-line"></i></button></div>
+</div>
+</div></div></div>
+
+<!-- 8: RIFLETTI -->
+<div id="s8" class="sec"><div class="mi">
+<h1><i class="ri-lightbulb-flash-line" style="color:var(--lp);"></i> Rifletti</h1>
+<p class="sub">Hai scoperto come funziona Internet. Ora fermati e pensa.</p>
+<div class="cc" style="border-left:5px solid var(--lp);">
+<h3 style="margin-top:0;color:var(--lp);"><i class="ri-earth-line"></i> Chi possiede Internet?</h3>
+<p style="font-size:.84em;line-height:1.6;">Nessuno. Internet non ha un proprietario. È una rete di reti: milioni di computer collegati tra loro. Ma i <strong>cavi</strong>, i <strong>server</strong> e le <strong>antenne</strong> appartengono ad aziende (TIM, Vodafone, Google, Amazon...). Queste aziende possono decidere chi va veloce e chi va piano.</p>
+</div>
+<div class="cc mt" style="border-left:5px solid var(--lr);">
+<h3 style="margin-top:0;color:var(--lr);"><i class="ri-signal-wifi-off-line"></i> Digital Divide</h3>
+<p style="font-size:.84em;line-height:1.6;">Non tutti hanno la stessa "autostrada". In Italia ci sono zone con fibra a 1 Gbps e zone dove arriva solo l'ADSL a 7 Mbps. Nel mondo, <strong>2,6 miliardi di persone</strong> non hanno ancora accesso a Internet. L'accesso alla rete è un diritto?</p>
+</div>
+<h2><i class="ri-mind-map"></i> Domande aperte</h2><div id="metaQ"></div>
+<h2 style="color:var(--lp);"><i class="ri-quill-pen-line"></i> Il tuo manifesto della connessione</h2>
+<p class="sub">Scegli almeno 3 regole per vivere meglio online.</p>
+<div id="manifesto"></div>
+<div class="cc tc mt" style="border-color:var(--lg);background:linear-gradient(135deg,rgba(255,237,0,.06),rgba(0,133,43,.06));">
+<i class="ri-trophy-line" style="font-size:2.2em;color:var(--ly);display:block;"></i>
+<div style="font-weight:900;font-size:1.15em;margin:6px 0;">Complimenti!</div>
+<div style="font-size:.85em;color:var(--tx2);margin-bottom:14px;">Hai completato L'Indirizzo Digitale!</div>
+<button class="btn by" onclick="G(0)" style="padding:14px 32px;font-size:.9em;"><i class="ri-trophy-line"></i> Classifica</button>
+</div>
+<div style="margin-top:30px;padding:16px;border-top:2px solid var(--bd);text-align:center;font-size:.62em;color:var(--tx3);line-height:1.8;">
+<div style="margin-bottom:4px;"><strong>L'Indirizzo Digitale</strong></div>
+<div><strong>SacraFamiglia education</strong> — Animatore Digitale <strong>Andrea Cerioli</strong></div>
+<div style="display:flex;align-items:center;justify-content:center;gap:3px;margin-top:4px;">
+<i class="ri-creative-commons-line" style="font-size:1.4em;"></i><i class="ri-creative-commons-by-line" style="font-size:1.4em;"></i><i class="ri-creative-commons-nc-line" style="font-size:1.4em;"></i><i class="ri-creative-commons-sa-line" style="font-size:1.4em;"></i></div>
+<div style="margin-top:3px;">Creative Commons BY-NC-SA 4.0</div>
+</div>
+</div></div>
+
+</div></div>
+
+<!-- INFO DOCENTE MODAL -->
+<div id="infoDoc" style="display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:20px;" onclick="if(event.target===this)this.style.display='none';">
+<div style="background:var(--card);border-radius:16px;max-width:700px;width:100%;max-height:85vh;overflow-y:auto;padding:28px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+<button onclick="document.getElementById('infoDoc').style.display='none';" style="position:absolute;top:12px;right:12px;border:none;background:none;font-size:1.2em;cursor:pointer;color:var(--tx3);"><i class="ri-close-line"></i></button>
+<div style="text-align:center;margin-bottom:16px;"><div style="font-weight:900;font-size:1.2em;">Guida Metodologica</div><div style="font-size:.78em;color:var(--tx2);">SacraFamiglia Edu — A.D. Andrea Cerioli</div></div>
+<div style="font-size:.84em;line-height:1.75;">
+<h3 style="color:var(--lb);margin:16px 0 6px;"><i class="ri-target-line"></i> Obiettivo</h3>
+<p>Comprendere i fondamenti del funzionamento di Internet: indirizzi IP, DNS, URL, protocolli, tipi di connessione e sicurezza.</p>
+<h3 style="color:var(--lb);margin:16px 0 6px;"><i class="ri-layout-grid-line"></i> Struttura</h3>
+<div style="display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.92em;">
+<strong>1. Indirizzi</strong><span>IP, pubblico vs privato, formato</span>
+<strong>2. Le Strade</strong><span>Connessioni, 5G vs GB, metafora autostradale</span>
+<strong>3. DNS</strong><span>Traduzione nomi→IP, gioco interattivo</span>
+<strong>4. URL</strong><span>Anatomia di un indirizzo web</span>
+<strong>5. Il Viaggio</strong><span>Percorso dei dati da telefono a server</span>
+<strong>6. HTTPS</strong><span>Sicurezza: cartolina vs busta sigillata</span>
+<strong>7. <span style="cursor:default;" onclick="Z.x=Math.max(Z.x,950);rT();rL();document.getElementById('infoDoc').style.display='none';G(7);">Bricks</span></strong><span>Gioco Firewall — top 5</span>
+<strong>8. Rifletti</strong><span>Digital divide, neutralità, manifesto</span>
+</div>
+<h3 style="color:var(--lb);margin:16px 0 6px;"><i class="ri-links-line"></i> Competenze</h3>
+<p>DigComp 2.2 (area 1, 2, 4), pensiero critico, cittadinanza digitale, media literacy.</p>
+</div></div></div>
+
+<script>
+// ═══ SAVE SYSTEM ═══
+const SAVE_KEY='indirizzo_save';
+function saveGame(){try{sessionStorage.setItem(SAVE_KEY,JSON.stringify({x:Z.x,name:Z.name||'PLAYER',ts:Date.now()}));}catch(e){}}
+function loadGame(){try{const r=sessionStorage.getItem(SAVE_KEY);if(!r)return false;const d=JSON.parse(r);Z.x=d.x||0;Z.name=d.name||'PLAYER';return true;}catch(e){return false;}}
+const NAME_TAGS=['Byte','Pixel','Code','Tech','Bit','Net','Data','Giga','Tera','Game','Pro','Dev','Cloud','Hack','Web','App','File','Disk','Ram','Wifi'];
+function askName(){const s=loadGame();if(s&&Z.name&&Z.name!=='PLAYER'){document.getElementById('sNm').textContent=Z.name;
+const r=gR(Z.x);const ov=document.createElement('div');ov.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+ov.innerHTML=`<div style="background:var(--card);border-radius:16px;max-width:360px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;">
+<div style="font-size:2em;margin-bottom:4px;color:${r.c};"><i class="${r.i}"></i></div><div style="font-weight:900;font-size:1.1em;">Bentornato!</div>
+<div style="font-weight:800;font-size:1.3em;color:var(--lb);margin:6px 0;">${Z.name}</div><div style="font-size:.82em;color:var(--tx2);margin-bottom:4px;">${r.n} — ${Z.x} XP</div>
+<div style="margin:12px 0;display:flex;gap:8px;justify-content:center;">
+<button class="btn bg" onclick="this.closest('div[style]').parentElement.remove();" style="padding:10px 24px;"><i class="ri-play-circle-line"></i> CONTINUA</button>
+<button class="btn bgh bsm" onclick="sessionStorage.removeItem(SAVE_KEY);Z.x=0;Z.name='PLAYER';rT();rL();this.closest('div[style]').parentElement.remove();showNameModal();" style="font-size:.62em;"><i class="ri-refresh-line"></i> Nuovo</button></div></div>`;
+document.body.appendChild(ov);return;}showNameModal();}
+function showNameModal(){const ov=document.createElement('div');ov.id='nameOv';ov.style.cssText='position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:20px;';
+const tags=NAME_TAGS.sort(()=>Math.random()-.5).slice(0,8);
+ov.innerHTML=`<div style="background:var(--card);border-radius:16px;max-width:400px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center;">
+<div style="font-size:2em;margin-bottom:4px;"><i class="ri-user-star-line" style="color:var(--lb);"></i></div>
+<div style="font-weight:900;font-size:1.1em;margin-bottom:4px;">Crea il tuo nickname</div>
+<div style="font-size:.78em;color:var(--tx2);margin-bottom:14px;">Formato: <strong>Nome_Tag</strong></div>
+<div style="display:flex;gap:6px;margin-bottom:12px;">
+<input id="nmInput" type="text" maxlength="10" placeholder="Nome" style="flex:1;padding:10px;border-radius:8px;border:2px solid var(--bd);font-family:Rubik;font-weight:700;font-size:.9em;">
+<div style="font-weight:900;font-size:1.1em;padding-top:10px;color:var(--tx3);">_</div>
+<input id="nmTag" type="text" maxlength="6" placeholder="Tag" style="width:80px;padding:10px;border-radius:8px;border:2px solid var(--bd);font-family:Rubik;font-weight:700;font-size:.9em;">
+</div><div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-bottom:14px;">
+${tags.map(t=>`<button onclick="document.getElementById('nmTag').value='${t}';" style="border:1.5px solid var(--bd);background:#FAFAF5;border-radius:6px;padding:3px 8px;font-family:Rubik;font-weight:700;font-size:.68em;cursor:pointer;color:var(--lb);">${t}</button>`).join('')}
+</div><div id="nmPreview" style="font-weight:900;font-size:1em;color:var(--lb);margin-bottom:6px;min-height:24px;"></div>
+<div id="nmError" style="font-size:.72em;color:var(--lr);font-weight:700;min-height:18px;margin-bottom:8px;"></div>
+<button class="btn bg" onclick="confirmName()" style="padding:10px 28px;"><i class="ri-check-line"></i> GIOCA!</button></div>`;
+document.body.appendChild(ov);const upd=()=>{const n=document.getElementById('nmInput').value.trim(),t=document.getElementById('nmTag').value.trim();document.getElementById('nmPreview').textContent=n&&t?n+'_'+t:'';};
+document.getElementById('nmInput').addEventListener('input',upd);document.getElementById('nmTag').addEventListener('input',upd);}
+function confirmName(){const n=document.getElementById('nmInput').value.trim(),t=document.getElementById('nmTag').value.trim(),err=document.getElementById('nmError');
+if(!n){err.textContent='Scrivi il tuo nome!';return;}if(!t){err.textContent='Scegli un tag!';return;}if(n.length<2){err.textContent='Nome troppo corto!';return;}
+const full=n+'_'+t;if(NP.some(p=>p.n.toLowerCase()===full.toLowerCase())){err.textContent='Nome già esistente!';return;}
+Z.name=full;document.getElementById('sNm').textContent=Z.name;saveGame();rL();document.getElementById('nameOv').remove();}
+window.addEventListener('beforeunload',()=>{saveGame();});
+
+let Z={x:0,d:{},name:'PLAYER'};
+
+// ═══ ENGINE ═══
+const RK=[{n:'Esploratore',i:'ri-compass-3-line',x:0,c:'#A09A90'},{n:'Byte Scout',i:'ri-search-line',x:80,c:'#0055BF'},{n:'Kilo Kid',i:'ri-flashlight-line',x:200,c:'#8B4DAB'},{n:'Mega Star',i:'ri-star-line',x:400,c:'#FF7E14'},{n:'Giga Pro',i:'ri-vip-diamond-line',x:650,c:'#00852B'},{n:'Tera Titan',i:'ri-vip-crown-line',x:950,c:'#E3000B'}];
+const NP=[{n:'acerionet',x:900,b:1},{n:'Marco_Geek',x:780},{n:'Elena_Code',x:680},{n:'Chiara_Byte',x:590},{n:'Luca_Game',x:500},{n:'Sofia_Pixel',x:420},{n:'Matteo_Pro',x:350},{n:'Giulia_Tech',x:280},{n:'Davide_Net',x:210},{n:'Sara_Cloud',x:150},{n:'Leo_Bit',x:90},{n:'Tommy_Noob',x:30}];
+const SEC=['home','ip','strade','dns','url','viaggio','https','bricks','rifletti'];
+const SL=[['ri-home-line','Home',4],['ri-home-wifi-line','Indirizzi',6],['ri-road-map-line','Strade',4],['ri-contacts-book-line','DNS',4],['ri-link','URL',4],['ri-route-line','Viaggio',6],['ri-lock-line','HTTPS',4],['ri-shield-line','Bricks',4],['ri-lightbulb-flash-line','Rifletti',6]];
+
+function init(){loadGame();bT();rT();rL();buildRoad();buildJourney();bS1();bS2();bDns();bS3();bS4();bS5();bS6();bMeta();bManifesto();
+document.querySelectorAll('.vid-lock').forEach(el=>{el.addEventListener('contextmenu',e=>e.preventDefault());});
+document.addEventListener('click',sndInit,{once:true});askName();}
+function bT(){document.getElementById('tabs').innerHTML=SEC.map((_,i)=>{const ns=SL[i][2];const studs=Array(ns).fill('<span></span>').join('');const lock=i===7?' <i class="ri-lock-line" style="font-size:.7em;opacity:.5;"></i>':'';return`<button class="tab ${i===0?'a':''}" id="t${i}" onclick="G(${i})" style="margin-top:10px;"><span class="tab-studs">${studs}</span>${SL[i][1]}${lock}</button>`;}).join('');}
+function G(i){bmLeaveSec();document.querySelectorAll('.sec').forEach(s=>s.classList.remove('a'));document.getElementById('s'+i).classList.add('a');document.querySelectorAll('.tab').forEach(b=>b.classList.remove('a'));document.getElementById('t'+i)?.classList.add('a');document.getElementById('MA').scrollTop=0;document.getElementById('MA').style.overflowY=i===7?'hidden':'auto';if(i===7)biCheckLock();bmEnterSec();musPlay(i);}
+function aX(n){Z.x=Math.max(0,Z.x+n);saveGame();
+NP.forEach(p=>{if(p.b)return;const near=Math.abs(p.x-Z.x)<150;if(Math.random()<(near?.6:.3)){p.x=Math.max(20,p.x+Math.floor(Math.random()*(near?25:12))*(Math.random()>.4?1:-1));}});
+const ace=NP.find(p=>p.b);if(ace){ace.x=Math.max(850,ace.x);if(Z.x>ace.x&&Z.x<=ace.x+Math.abs(n)+10)ace.x+=Math.floor(50+Math.random()*80);else if(Z.x>ace.x+50)ace.x+=Math.floor(20+Math.random()*40);else if(Z.x>ace.x*0.8)ace.x+=Math.floor(5+Math.random()*15);}
+rT();rL();}
+function gR(x){let r=RK[0];for(const k of RK)if(x>=k.x)r=k;return r;}
+function gN(x){for(const k of RK)if(x<k.x)return k;return null;}
+let prevRank='';
+function rT(){const r=gR(Z.x),n=gN(Z.x);if(prevRank&&prevRank!==r.n&&RK.indexOf(r)>RK.indexOf(RK.find(k=>k.n===prevRank)))sndLevelUp();prevRank=r.n;
+document.getElementById('sAv').innerHTML=`<i class="${r.i}"></i>`;document.getElementById('sAv').style.borderColor=r.c;document.getElementById('sRk').textContent=r.n;document.getElementById('sXC').textContent=Z.x+' XP';
+if(n){const p=(Z.x-r.x)/(n.x-r.x)*100;document.getElementById('sXF').style.width=p+'%';document.getElementById('sXN').textContent='→ '+n.x;}else{document.getElementById('sXF').style.width='100%';document.getElementById('sXN').textContent='MAX!';}
+const nb=Math.floor(Z.x/25);const colors=['var(--lb)','var(--lg)','var(--lo)','var(--lr)','var(--lp)'];
+document.getElementById('sBricks').innerHTML=Array(nb).fill(0).map((_,i)=>`<div style="width:10px;height:7px;border-radius:1px;background:${colors[i%5]};box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 1px 0 rgba(0,0,0,.15);"></div>`).join('');}
+let prevPos={};
+function rL(){const a=[...NP,{n:Z.name||'TU',x:Z.x,p:1}];a.sort((a,b)=>b.x-a.x);const newPos={};a.forEach((p,i)=>newPos[p.n]=i+1);
+document.getElementById('lb').innerHTML=a.map((p,i)=>{const cl=p.p?'me':p.b?'boss':'';const old=prevPos[p.n];const cur=i+1;let anim='',mv='';
+if(old!==undefined&&old!==cur){if(cur<old){anim=' up';mv='<span class="sb-mv up">▲'+(old-cur)+'</span>';}else{anim=' down';mv='<span class="sb-mv dn">▼'+(cur-old)+'</span>';}}
+return`<div class="sb-lr ${cl}${anim}"><div class="sb-pos">${cur}</div><div class="sb-nm2">${p.n}${mv}</div><div class="sb-xp">${p.x}</div></div>`;}).join('');prevPos={...newPos};}
+
+function bk(n,c){return'<span class="ib">'+Array(n).fill(`<b style="background:${c};"></b>`).join('')+'</span>';}
+function mkE(id,q,os,ci,xp,exp){const nb=Math.ceil(xp/5);const brks='<span class="ex-bricks">'+Array(nb).fill('<span class="ex-brk"></span>').join('')+'</span>';const esc=exp.replace(/'/g,"\\'").replace(/"/g,'&quot;');
+return`<div class="ex" id="${id}"><div class="ex-l">${brks} +${xp} XP</div><div class="ex-q">${q}</div><div class="ex-os">${os.map((o,i)=>`<button class="ex-o" onclick="chk('${id}',${i},${ci},${xp},'${esc}')">${o}</button>`).join('')}</div><div class="ex-fb" id="${id}fb"></div></div>`;}
+function chk(id,ch,co,xp,exp){const el=document.getElementById(id);if(el.classList.contains('dok'))return;bmAnswer();
+el.querySelectorAll('.ex-o').forEach((b,i)=>{b.disabled=true;if(i===co)b.classList.add('ok');if(i===ch&&i!==co)b.classList.add('no');});const fb=document.getElementById(id+'fb');
+const nb=Math.ceil(xp/5);const brks='<span class="fb-bricks">'+Array(nb).fill(0).map((_,i)=>`<span class="fb-brk" style="background:var(--lg);animation-delay:${i*.06}s;"></span>`).join('')+'</span>';
+const rbrks='<span class="fb-bricks">'+Array(nb).fill(0).map((_,i)=>`<span class="fb-brk" style="background:var(--lr);animation-delay:${i*.06}s;"></span>`).join('')+'</span>';
+if(ch===co){el.classList.add('dok');fb.className='ex-fb s fok';fb.innerHTML='✓ +'+xp+' XP — '+exp+' '+brks;aX(xp);sndCorrect();}
+else{el.classList.add('dno');fb.className='ex-fb s fno';fb.innerHTML='✗ -'+xp+' XP — '+exp+' '+rbrks;Z.x=Math.max(0,Z.x-xp);rT();rL();sndWrong();}}
+
+// ═══ MUSIC (YouTube) ═══
+const MUS_IDS=['elNiQDuXIMk','wHySkOtKhwo','kWkKW-7bh3U','bY8za-m3Mio','WSgwu_vNMjQ','yMwBsAZ5BHI','vcl2ip6Kl3I','Fu5V2wc-RDI'];
+let musOn=true,musPlayer=null,musCur=-1,musReady=false,musQueued=-1;
+function musLoadAPI(){const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t);}
+window.onYouTubeIframeAPIReady=function(){const d=document.createElement('div');d.id='musYT';d.style.cssText='position:fixed;top:-200px;left:-200px;width:1px;height:1px;opacity:0;pointer-events:none;';document.body.appendChild(d);
+musPlayer=new YT.Player('musYT',{height:'1',width:'1',playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,modestbranding:1,playsinline:1,rel:0},events:{onReady:function(){musReady=true;if(musQueued>=0)musPlay(musQueued);},onStateChange:function(e){if(e.data===YT.PlayerState.ENDED&&musPlayer)musPlayer.playVideo();}}});};
+function musPlay(i){if(!musOn||i===0){musStop();return;}const t=i-1;if(t<0||t>=MUS_IDS.length)return;if(musCur===t)return;musCur=t;if(!musReady){musQueued=i;return;}musPlayer.loadVideoById({videoId:MUS_IDS[t]});musPlayer.setVolume(30);}
+function musStop(){if(musReady&&musPlayer)try{musPlayer.stopVideo();}catch(e){}musCur=-1;}
+function toggleMusic(){musOn=!musOn;document.getElementById('musicIco').className=musOn?'ri-volume-up-line':'ri-volume-mute-line';document.getElementById('musicLbl').textContent=musOn?'ON':'OFF';
+document.getElementById('musicBtn').style.background=musOn?'var(--lb)':'#666';if(musOn){const c=SEC.findIndex((_,i)=>document.getElementById('s'+i)?.classList.contains('a'));musPlay(c);}else musStop();sndClick();}
+musLoadAPI();
+
+// ═══ SOUNDS ═══
+let audioCtx=null;
+function sndInit(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();}
+function sndPlay(f,d,t,v){sndInit();if(!audioCtx)return;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||'square';o.frequency.value=f;g.gain.value=v||.12;o.connect(g);g.connect(audioCtx.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+d);o.stop(audioCtx.currentTime+d);}
+function sndCorrect(){sndPlay(523,.08,'square',.1);setTimeout(()=>sndPlay(659,.08,'square',.1),80);setTimeout(()=>sndPlay(784,.12,'square',.1),160);}
+function sndWrong(){sndPlay(200,.15,'sawtooth',.08);setTimeout(()=>sndPlay(150,.2,'sawtooth',.08),120);}
+function sndLevelUp(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>sndPlay(f,.15,'square',.1),i*120));}
+function sndClick(){sndPlay(440,.04,'square',.06);}
+function sndShoot(){sndPlay(880,.06,'square',.05);}
+function sndHit(){sndPlay(300,.1,'sawtooth',.08);}
+function sndPenalty(){sndPlay(120,.3,'sawtooth',.1);}
+
+// ═══ BEHAVIORAL MONITOR ═══
+const BM={clicks:[],answers:[],secEnter:0,violations:0,warned:{},popupActive:false};
+function bmPopup(ic,ti,msg,pen){if(BM.popupActive)return;BM.popupActive=true;BM.violations++;Z.x=Math.max(0,Z.x-pen);rT();rL();sndPenalty();
+const ov=document.createElement('div');ov.className='bm-overlay';const pop=document.createElement('div');pop.className='bm-popup';
+pop.innerHTML=`<div style="font-size:2.5em;color:var(--lr);margin-bottom:6px;"><i class="${ic}"></i></div><div style="font-weight:900;font-size:1.1em;margin-bottom:4px;">${ti}</div><div style="font-size:.84em;color:var(--tx2);line-height:1.55;margin-bottom:12px;">${msg}</div><div style="font-weight:800;color:var(--lr);font-size:.9em;">-${pen} XP</div><div style="margin-top:12px;"><button class="btn br bsm" onclick="bmClose()" style="font-size:.75em;">Ho capito</button></div>`;
+document.body.appendChild(ov);document.body.appendChild(pop);ov.onclick=()=>bmClose();}
+function bmClose(){BM.popupActive=false;document.querySelectorAll('.bm-overlay,.bm-popup').forEach(e=>e.remove());}
+document.addEventListener('click',()=>{const n=Date.now();BM.clicks.push(n);BM.clicks=BM.clicks.filter(t=>n-t<5000);if(BM.clicks.length>=6&&!BM.warned.click){BM.warned.click=true;bmPopup('ri-cursor-line','Click compulsivo!','Stai cliccando troppo velocemente.',20);setTimeout(()=>{BM.warned.click=false;BM.clicks=[];},15000);}});
+let bmKeys=[];document.addEventListener('keydown',e=>{if(['Space','ArrowLeft','ArrowRight','Enter'].includes(e.code))return;const n=Date.now();bmKeys.push(n);bmKeys=bmKeys.filter(t=>n-t<3000);if(bmKeys.length>=8&&!BM.warned.keys){BM.warned.keys=true;bmPopup('ri-keyboard-line','Digitazione compulsiva!','Pensa al risultato prima di scrivere.',20);setTimeout(()=>{BM.warned.keys=false;bmKeys=[];},15000);}});
+function bmAnswer(){const n=Date.now();BM.answers.push(n);BM.answers=BM.answers.filter(t=>n-t<6000);if(BM.answers.length>=3&&!BM.warned.fast){BM.warned.fast=true;bmPopup('ri-speed-line','Troppo veloce!','Tre risposte in 6 secondi? Leggi le domande!',25);setTimeout(()=>{BM.warned.fast=false;BM.answers=[];},20000);}}
+function bmEnterSec(){BM.secEnter=Date.now();}
+function bmLeaveSec(){if(!BM.secEnter)return;const e=(Date.now()-BM.secEnter)/1000;if(e<30&&e>2&&!BM.warned.sec){BM.warned.sec=true;bmPopup('ri-skip-forward-line','Sezione saltata!','Meno di 30 secondi? Leggi i contenuti!',30);setTimeout(()=>{BM.warned.sec=false;},30000);}BM.secEnter=0;}
+
+// ═══ ROAD VISUALIZATION ═══
+function buildRoad(){
+const roads=[
+{n:'Stradina sterrata (ADSL 7 Mbps)',spd:12,c:'#8B6914',lanes:1,bg:'#6B5210'},
+{n:'Provinciale (4G ~50 Mbps)',spd:5,c:'#FF7E14',lanes:2,bg:'#9E5A10'},
+{n:'Autostrada (Fibra 100 Mbps)',spd:2.5,c:'#0055BF',lanes:3,bg:'#003D8C'},
+{n:'6 corsie (Fibra 1 Gbps)',spd:1,c:'#00852B',lanes:4,bg:'#006420'},
+{n:'Pista da corsa (5G ~1-10 Gbps)',spd:.6,c:'#E3000B',lanes:5,bg:'#B8000A'},
+];
+document.getElementById('roadViz').innerHTML=roads.map(r=>{
+let lanes='';for(let l=0;l<r.lanes;l++){
+const cars=Array(4).fill(0).map((_,i)=>`<div class="road-car" style="background:${['var(--ly)','var(--lg)','var(--lo)','var(--lb)'][i%4]};animation-duration:${r.spd+Math.random()}s;animation-delay:${(i*r.spd/4)+Math.random()}s;top:${4+Math.random()*16}px;"></div>`).join('');
+lanes+=`<div class="road-lane" style="background:${l%2===0?r.bg:r.bg+'CC'};">${cars}</div>`;}
+return`<div style="margin-bottom:2px;"><div style="position:relative;">${lanes}<div class="road-label">${r.n}</div></div></div>`;}).join('');}
+
+// ═══ PACKET JOURNEY ═══
+function buildJourney(){
+const nodes=[{n:'Il tuo\ntelefono',ic:'ri-smartphone-line',x:5},{n:'Router\nWi-Fi',ic:'ri-router-line',x:20},{n:'ISP\n(Operatore)',ic:'ri-building-line',x:38},{n:'Server\nWhatsApp',ic:'ri-server-line',x:55},{n:'ISP\namico',ic:'ri-building-line',x:72},{n:'Telefono\namico',ic:'ri-smartphone-line',x:90}];
+document.getElementById('journeyViz').innerHTML=`<h3 style="margin-top:0;"><i class="ri-route-line"></i> Il viaggio di un messaggio WhatsApp</h3>
+<div class="pkt-track" style="height:80px;margin:12px 0;">
+${nodes.map(n=>`<div class="pkt-node" style="left:${n.x}%;"><i class="${n.ic}" style="color:var(--lb);"></i><span>${n.n.replace('\n','<br>')}</span></div>`).join('')}
+<div class="pkt-dot" style="background:var(--lg);animation-duration:4s;"></div>
+<div class="pkt-dot" style="background:var(--lo);animation-duration:4s;animation-delay:2s;"></div>
+</div>
+<div class="tip"><i class="ri-information-line"></i> Il messaggio viene spezzato in <strong>pacchetti</strong>, ognuno viaggia per la strada più veloce disponibile, e vengono riassemblati all'arrivo!</div>`;}
+
+// ═══ EXERCISES ═══
+function bS1(){const qs=[
+{q:'Quale di questi è un indirizzo IP valido?',o:['192.168.1.25 '+bk(3,'var(--lg)'),'192.168.1.999 '+bk(3,'var(--lr)'),'google.com '+bk(3,'var(--lo)')],c:0,e:'Ogni numero deve essere tra 0 e 255!'},
+{q:'L\'IP 192.168.1.10 è:',o:['Pubblico '+bk(2,'var(--lg)'),'Privato '+bk(2,'var(--lo)'),'Non valido '+bk(2,'var(--lr)')],c:1,e:'192.168.x.x è sempre privato!'},
+{q:'A cosa serve l\'indirizzo IP?',o:['Identificare un sito web','Identificare un dispositivo in rete '+bk(3,'var(--lb)'),'Proteggere il computer'],c:1,e:'Come l\'indirizzo di casa identifica dove abiti!'},
+{q:'Chi assegna il tuo IP privato?',o:['Google','Il tuo router '+bk(3,'var(--lg)'),'Il governo'],c:1,e:'Il router assegna IP a ogni dispositivo nella tua rete!'},
+{q:'8.8.8.8 è l\'IP di:',o:['Il tuo telefono','Il DNS di Google '+bk(3,'var(--lb)'),'WhatsApp'],c:1,e:'È uno dei DNS pubblici più usati al mondo!'},
+{q:'Un IP è fatto di:',o:['4 numeri da 0 a 255 '+bk(4,'var(--lb)'),'4 lettere','2 numeri da 0 a 999'],c:0,e:'Es: 192.168.1.1 — quattro gruppi separati da punti!'},
+];document.getElementById('s1ex').innerHTML=qs.map((q,i)=>mkE('ip'+i,q.q,q.o,q.c,15,q.e)).join('');}
+
+function bS2(){const qs=[
+{q:'5G significa:',o:['5 Gigabyte '+bk(3,'var(--lr)'),'Quinta Generazione di rete mobile '+bk(4,'var(--lg)'),'5 Gigabit al secondo '+bk(3,'var(--lo)')],c:1,e:'G = Generazione, non Giga!'},
+{q:'Quale connessione è più veloce?',o:['ADSL (7 Mbps) '+bk(1,'var(--lo)'),'4G (50 Mbps) '+bk(3,'var(--lo)'),'Fibra 1 Gbps '+bk(8,'var(--lg)')],c:2,e:'La fibra è l\'autostrada a 6 corsie!'},
+{q:'Il Wi-Fi di casa usa il tuo:',o:['Piano dati mobile','Collegamento in fibra/ADSL '+bk(3,'var(--lb)'),'Satellite'],c:1,e:'Il router trasforma la fibra/ADSL in segnale wireless!'},
+{q:'Mbps significa:',o:['Megabyte per secondo','Megabit per secondo '+bk(3,'var(--lg)'),'Millibyte per secondo'],c:1,e:'Mega-bit, non Mega-byte! 1 Byte = 8 bit'},
+{q:'Con ADSL a 7 Mbps scarichi un film da 5 GB in:',o:['~10 secondi '+bk(1,'var(--lg)'),'~1 ora e mezza '+bk(6,'var(--lr)'),'~10 ore '+bk(10,'var(--lr)')],c:1,e:'5 GB = 40.000 Mbit. 40.000 ÷ 7 ≈ 5.700 sec ≈ 95 min!'},
+{q:'Il 5G è più veloce del 4G perché:',o:['Usa più energia','Ha più banda e meno latenza '+bk(4,'var(--lg)'),'Costa di più'],c:1,e:'Più banda = più corsie sull\'autostrada!'},
+{q:'Streaming in 4K richiede almeno:',o:['5 Mbps '+bk(1,'var(--lg)'),'25 Mbps '+bk(4,'var(--lg)'),'1 Gbps '+bk(8,'var(--lg)')],c:1,e:'Netflix raccomanda almeno 25 Mbps per il 4K!'},
+{q:'Quale NON è un tipo di connessione?',o:['ADSL','Fibra ottica','TCP '+bk(2,'var(--lr)')],c:2,e:'TCP è un protocollo, non un tipo di connessione!'},
+];document.getElementById('s2ex').innerHTML=qs.map((q,i)=>mkE('st'+i,q.q,q.o,q.c,15,q.e)).join('');}
+
+function bDns(){
+const pairs=[{n:'google.com',ip:'142.250.180.46'},{n:'youtube.com',ip:'142.250.185.110'},{n:'wikipedia.org',ip:'208.80.154.224'},{n:'whatsapp.com',ip:'157.240.25.53'},{n:'instagram.com',ip:'157.240.1.174'}];
+let dIdx=0,dScore=0;
+function rDns(){if(dIdx>=pairs.length){document.getElementById('dnsGame').innerHTML=`<div class="cc tc" style="border-color:var(--lg);"><div style="font-weight:900;">DNS completato! ${dScore}/${pairs.length} corretti</div></div>`;return;}
+const p=pairs[dIdx];const fake1=pairs[(dIdx+1)%pairs.length].ip;const fake2=pairs[(dIdx+2)%pairs.length].ip;
+const opts=[p.ip,fake1,fake2].sort(()=>Math.random()-.5);
+document.getElementById('dnsGame').innerHTML=`<div class="cc"><div style="font-weight:800;font-size:.85em;margin-bottom:8px;">Richiesta ${dIdx+1}/${pairs.length}: <span style="color:var(--lg);">${p.n}</span></div>
+<div style="display:flex;gap:6px;flex-wrap:wrap;">${opts.map(o=>`<button class="ex-o" onclick="dnsAns('${o}','${p.ip}')">${o}</button>`).join('')}</div>
+<div id="dnsFb" style="margin-top:6px;"></div></div>`;}
+window.dnsAns=function(ch,co){if(ch===co){dScore++;aX(20);document.getElementById('dnsFb').innerHTML='<div style="color:var(--lg);font-weight:700;font-size:.82em;">✓ Corretto! +20 XP</div>';sndCorrect();}
+else{Z.x=Math.max(0,Z.x-20);rT();rL();document.getElementById('dnsFb').innerHTML='<div style="color:var(--lr);font-weight:700;font-size:.82em;">✗ Era '+co+' -20 XP</div>';sndWrong();}
+dIdx++;setTimeout(rDns,1200);};rDns();}
+
+function bS3(){const qs=[
+{q:'Il DNS serve a:',o:['Proteggere la connessione','Tradurre nomi in IP '+bk(3,'var(--lg)'),'Velocizzare Internet'],c:1,e:'È la rubrica telefonica di Internet!'},
+{q:'Senza DNS dovresti:',o:['Ricordare numeri IP a memoria '+bk(4,'var(--lr)'),'Usare il Wi-Fi','Pagare di più'],c:0,e:'Immagina ricordare 142.250.180.46 per Google!'},
+{q:'Quale si usa nel browser?',o:['L\'indirizzo IP','Il nome di dominio (es: google.com) '+bk(3,'var(--lg)'),'Il numero di telefono'],c:1,e:'Il DNS traduce il nome per te!'},
+];document.getElementById('s3ex').innerHTML=qs.map((q,i)=>mkE('dn'+i,q.q,q.o,q.c,15,q.e)).join('');}
+
+function bS4(){const qs=[
+{q:'In "https://www.scuola.edu/classe3", il dominio è:',o:['https://','www.scuola.edu '+bk(3,'var(--lg)'),'/classe3'],c:1,e:'Il dominio è il nome del sito!'},
+{q:'Il protocollo "https" indica:',o:['Un sito vecchio','Connessione sicura e crittografata '+bk(4,'var(--lg)'),'Un sito a pagamento'],c:1,e:'La S sta per Secure!'},
+{q:'"/classe3" in un URL è:',o:['Il dominio','Il protocollo','Il percorso (la pagina specifica) '+bk(3,'var(--lg)')],c:2,e:'Come la stanza dentro l\'edificio!'},
+{q:'Un URL valido inizia sempre con:',o:['www','http:// o https:// '+bk(3,'var(--lg)'),'@'],c:1,e:'Il protocollo è sempre il primo pezzo!'},
+{q:'Cosa succede se sbagli a scrivere un URL?',o:['Il sito si rompe','Errore 404: pagina non trovata '+bk(3,'var(--lr)'),'Niente'],c:1,e:'Come scrivere un indirizzo sbagliato su una busta!'},
+];document.getElementById('s4ex').innerHTML=qs.map((q,i)=>mkE('ur'+i,q.q,q.o,q.c,15,q.e)).join('');}
+
+function bS5(){const qs=[
+{q:'Un messaggio WhatsApp passa prima per:',o:['Il satellite','Il tuo router '+bk(3,'var(--lg)'),'Direttamente al telefono amico'],c:1,e:'Il router è il primo passaggio!'},
+{q:'I dati vengono spezzati in:',o:['Pagine','Pacchetti '+bk(3,'var(--lb)'),'File'],c:1,e:'Ogni messaggio viene diviso in pacchetti!'},
+{q:'Chi riassembla i pacchetti all\'arrivo?',o:['Il server WhatsApp','Il dispositivo del destinatario '+bk(3,'var(--lg)'),'Il router'],c:1,e:'Il telefono di chi riceve rimette insieme i pezzi!'},
+{q:'Se un pacchetto si perde:',o:['Il messaggio sparisce','Viene rinviato automaticamente '+bk(3,'var(--lg)'),'Arriva incompleto'],c:1,e:'Il protocollo TCP verifica e rinvia!'},
+{q:'Un messaggio a una persona in Giappone:',o:['Ci mette ore','Arriva in millisecondi '+bk(3,'var(--lg)'),'Non arriva'],c:1,e:'I dati viaggiano quasi alla velocità della luce nei cavi in fibra!'},
+];document.getElementById('s5ex').innerHTML=qs.map((q,i)=>mkE('vg'+i,q.q,q.o,q.c,20,q.e)).join('');}
+
+function bS6(){const qs=[
+{q:'HTTP è come:',o:['Una busta sigillata','Una cartolina leggibile da tutti '+bk(3,'var(--lr)'),'Un pacco blindato'],c:1,e:'Tutti lungo il percorso possono leggere!'},
+{q:'La "S" in HTTPS sta per:',o:['Speed','Secure '+bk(3,'var(--lg)'),'Server'],c:1,e:'Secure = sicuro!'},
+{q:'Quando inserisci una password, il sito deve essere:',o:['HTTP va bene','HTTPS obbligatorio '+bk(4,'var(--lg)'),'Non importa'],c:1,e:'Mai inserire dati sensibili senza lucchetto!'},
+{q:'Il lucchetto nel browser indica:',o:['Sito a pagamento','Connessione crittografata '+bk(3,'var(--lg)'),'Sito governativo'],c:1,e:'I dati tra te e il sito sono protetti!'},
+{q:'Un hacker su una rete Wi-Fi pubblica può leggere i tuoi dati se il sito è:',o:['HTTPS '+bk(2,'var(--lg)'),'HTTP '+bk(4,'var(--lr)'),'Qualsiasi'],c:1,e:'HTTP = cartolina = leggibile da chiunque sulla rete!'},
+];document.getElementById('s6ex').innerHTML=qs.map((q,i)=>mkE('ht'+i,q.q,q.o,q.c,20,q.e)).join('');}
+
+// ═══ BRICK INVADERS (FIREWALL) ═══
+function biCheckLock(){const a=[...NP,{n:'TU',x:Z.x,p:1}];a.sort((a,b)=>b.x-a.x);const pos=a.findIndex(p=>p.p)+1;const lock=document.getElementById('biLock');
+if(pos<=5)lock.style.display='none';else{lock.style.display='flex';document.getElementById('biLockMsg').innerHTML='Devi essere nella <strong>TOP 5</strong>. Posizione <strong>'+pos+'</strong>. Scala!';}}
+const BI_MISSIONS=[{name:'Blocca il MALWARE!',target:'bad',desc:'Spara ai pacchetti pericolosi'},{name:'Solo HTTPS!',target:'http',desc:'Elimina i pacchetti HTTP non sicuri'},{name:'Ferma lo SPAM!',target:'spam',desc:'Blocca email indesiderate'},{name:'Proteggi tutto!',target:'all',desc:'Blocca malware + HTTP + spam'}];
+const BI_TYPES=[{label:'Email ✓',unit:'safe',c:'#00852B'},{label:'Foto ✓',unit:'safe',c:'#00852B'},{label:'HTTPS ✓',unit:'safe',c:'#0055BF'},{label:'WhatsApp ✓',unit:'safe',c:'#00852B'},
+{label:'MALWARE',unit:'bad',c:'#E3000B'},{label:'VIRUS',unit:'bad',c:'#E3000B'},{label:'TROJAN',unit:'bad',c:'#8B0000'},
+{label:'HTTP ⚠',unit:'http',c:'#FF7E14'},{label:'HTTP ⚠',unit:'http',c:'#FF7E14'},
+{label:'SPAM',unit:'spam',c:'#8B4DAB'},{label:'PHISHING',unit:'spam',c:'#8B4DAB'}];
+function biIsTarget(u){const m=BI_MISSIONS[bi.mis];if(m.target==='bad')return u==='bad';if(m.target==='http')return u==='http';if(m.target==='spam')return u==='spam';if(m.target==='all')return u!=='safe';return false;}
+let bi={active:false};let biKeys={};
+function biBegin(){const a=[...NP,{n:'TU',x:Z.x,p:1}];a.sort((a,b)=>b.x-a.x);if(a.findIndex(p=>p.p)+1>5){biCheckLock();return;}
+bi={active:true,mis:0,pts:0,lives:3,player:{x:400,w:60,h:20},bricks:[],bullets:[],spd:1,spawnT:0,frame:0,paused:true,pauseEnd:180};
+document.getElementById('biStart').style.display='none';document.getElementById('biEnd').style.display='none';document.getElementById('biCanvas').focus();biUpdHud();biLoop();}
+function biUpdHud(){document.getElementById('biMis').textContent=BI_MISSIONS[bi.mis]?.name||'Fine!';document.getElementById('biPts').textContent=bi.pts;document.getElementById('biLiv').textContent='♥'.repeat(Math.max(0,bi.lives));}
+function biSpawn(){const t=BI_TYPES[Math.floor(Math.random()*BI_TYPES.length)];const w=50+t.label.length*5;bi.bricks.push({x:Math.random()*(750-w)+25,y:-30,w:w,h:22,label:t.label,unit:t.unit,c:t.c,spd:.5+Math.random()*bi.spd});}
+function biLoop(){if(!bi.active)return;const cv=document.getElementById('biCanvas'),ctx=cv.getContext('2d');bi.frame++;
+if(biKeys['ArrowLeft']||biKeys['KeyA'])bi.player.x=Math.max(30,bi.player.x-8);
+if(biKeys['ArrowRight']||biKeys['KeyD'])bi.player.x=Math.min(770,bi.player.x+8);
+bi.spawnT++;if(!bi.paused&&bi.spawnT>Math.max(30,80-bi.mis*10)){bi.spawnT=0;biSpawn();}
+ctx.fillStyle='#0D0D2B';ctx.fillRect(0,0,800,420);
+for(let i=0;i<30;i++){ctx.fillStyle='rgba(255,255,255,'+(0.2+Math.random()*.3)+')';ctx.fillRect((i*137+bi.frame)%800,(i*251)%420,1,1);}
+if(bi.frame%7200===0&&bi.mis<BI_MISSIONS.length-1&&!bi.paused){bi.mis++;bi.spd+=.3;bi.paused=true;bi.pauseEnd=bi.frame+180;bi.bricks=[];bi.bullets=[];biUpdHud();}
+if(bi.paused){ctx.fillStyle='rgba(0,0,0,.85)';ctx.fillRect(0,0,800,420);ctx.fillStyle='#FFED00';ctx.font='bold 16px Rubik';ctx.textAlign='center';ctx.fillText('MISSIONE '+(bi.mis+1),400,140);ctx.fillStyle='#fff';ctx.font='bold 32px Rubik';ctx.fillText(BI_MISSIONS[bi.mis].name,400,210);ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='bold 14px Rubik';ctx.fillText(BI_MISSIONS[bi.mis].desc,400,260);const sl=Math.ceil((bi.pauseEnd-bi.frame)/60);ctx.fillStyle='#FFED00';ctx.font='bold 48px Rubik';ctx.fillText(sl,400,340);if(bi.frame>=bi.pauseEnd)bi.paused=false;requestAnimationFrame(biLoop);return;}
+const p=bi.player;ctx.fillStyle='#00852B';ctx.fillRect(p.x-p.w/2,395,p.w,p.h);for(let s=0;s<4;s++){ctx.fillStyle='#00A832';ctx.fillRect(p.x-p.w/2+8+s*13,391,8,4);}
+ctx.fillStyle='#FFED00';bi.bullets=bi.bullets.filter(b=>{b.y-=6;ctx.fillRect(b.x-2,b.y,4,10);return b.y>-10;});
+bi.bricks=bi.bricks.filter(br=>{br.y+=br.spd;ctx.fillStyle=br.c;ctx.fillRect(br.x,br.y,br.w,br.h);
+const ns=Math.floor(br.w/15);for(let s=0;s<ns;s++){ctx.fillStyle=br.c;ctx.globalAlpha=.7;ctx.fillRect(br.x+5+s*(br.w/ns),br.y-4,8,4);ctx.globalAlpha=1;}
+ctx.fillStyle='#fff';ctx.font='bold 11px Rubik';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(br.label,br.x+br.w/2,br.y+br.h/2);
+for(let i=bi.bullets.length-1;i>=0;i--){const bu=bi.bullets[i];if(bu.x>=br.x&&bu.x<=br.x+br.w&&bu.y>=br.y&&bu.y<=br.y+br.h){bi.bullets.splice(i,1);
+if(biIsTarget(br.unit)){bi.pts+=10;biUpdHud();sndHit();}else{bi.pts=Math.max(0,bi.pts-15);bi.lives--;biUpdHud();sndPenalty();if(bi.lives<=0){biGameOver();return false;}}return false;}}
+if(br.y>430){if(biIsTarget(br.unit)){bi.pts=Math.max(0,bi.pts-5);biUpdHud();}return false;}return true;});
+if(bi.mis>=BI_MISSIONS.length-1&&bi.frame>BI_MISSIONS.length*7200+200){biWin();return;}
+requestAnimationFrame(biLoop);}
+function biGameOver(){bi.active=false;document.getElementById('biStart').style.display='inline-flex';document.getElementById('biStart').innerHTML='<i class="ri-refresh-line"></i> RIPROVA';const xp=Math.floor(bi.pts/2);aX(xp);
+document.getElementById('biEnd').style.display='block';document.getElementById('biEnd').innerHTML=`<i class="ri-emotion-sad-line" style="font-size:1.5em;color:var(--lr);"></i><div style="font-weight:900;margin:4px 0;">Game Over!</div><div style="font-size:.82em;color:var(--tx2);">+${xp} XP</div>`;}
+function biWin(){bi.active=false;document.getElementById('biStart').style.display='inline-flex';document.getElementById('biStart').innerHTML='<i class="ri-refresh-line"></i> RIGIOCA';const xp=Math.floor(bi.pts/2)+50;aX(xp);
+document.getElementById('biEnd').style.display='block';document.getElementById('biEnd').innerHTML=`<i class="ri-trophy-line" style="font-size:1.5em;color:var(--ly);"></i><div style="font-weight:900;margin:4px 0;">Completato!</div><div style="font-size:.82em;color:var(--tx2);">+${xp} XP</div>`;}
+document.addEventListener('keydown',e=>{if(!bi.active)return;biKeys[e.code]=true;if(['Space','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if(e.code==='Space'){bi.bullets.push({x:bi.player.x,y:390});sndShoot();}});
+document.addEventListener('keyup',e=>{biKeys[e.code]=false;});
+document.addEventListener('mousemove',e=>{if(!bi.active)return;const cv=document.getElementById('biCanvas'),r=cv.getBoundingClientRect();if(e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)bi.player.x=(e.clientX-r.left)/r.width*800;});
+document.getElementById('biCanvas').addEventListener('click',e=>{if(!bi.active)return;bi.bullets.push({x:bi.player.x,y:390});});
+
+// ═══ METACOGNIZIONE ═══
+const META_Q=[
+{q:'Internet è gratis. Ma chi paga per i cavi, i server e le antenne?',os:['Nessuno, funziona da solo','Le aziende (TIM, Google, Amazon...)','Lo Stato'],
+fb:['Le infrastrutture costano miliardi. Qualcuno deve mantenerle.','Esatto. E chi possiede le infrastrutture ha potere su chi può usarle e a quale velocità.','Lo Stato regola, ma le infrastrutture sono quasi tutte private.']},
+{q:'2,6 miliardi di persone non hanno Internet. È un problema?',os:['No, vivevano bene prima','Sì, è un diritto fondamentale','Solo se vogliono usarlo'],
+fb:['Senza Internet oggi non puoi studiare, lavorare, accedere a servizi essenziali.','L\'ONU ha dichiarato l\'accesso a Internet un diritto umano nel 2016.','Non è questione di volontà: senza connessione sei escluso dalla società moderna.']},
+{q:'Il tuo operatore potrebbe rallentare YouTube e velocizzare il proprio servizio video. È giusto?',os:['Sì, è il loro business','No, tutti i dati devono viaggiare uguali','Dipende dal prezzo'],
+fb:['Ma così chi ha più soldi controlla cosa vedi. È il contrario della neutralità della rete.','Questo è il principio della neutralità della rete: tutti i pacchetti sono uguali.','La neutralità della rete non dovrebbe dipendere da quanto paghi.']},
+];
+function bMeta(){document.getElementById('metaQ').innerHTML=META_Q.map((q,qi)=>`<div class="cc" style="margin-bottom:12px;border-left:5px solid var(--lp);" id="mq${qi}">
+<div style="font-weight:800;font-size:.88em;margin-bottom:10px;line-height:1.5;">${q.q}</div>
+<div style="display:flex;flex-direction:column;gap:6px;">${q.os.map((o,oi)=>`<button class="ex-o" style="text-align:left;display:block;width:100%;" onclick="metaAns(${qi},${oi})">${o}</button>`).join('')}</div>
+<div id="mqfb${qi}" style="display:none;margin-top:10px;padding:12px;border-radius:8px;background:#F5F0FF;border-left:4px solid var(--lp);font-size:.82em;line-height:1.6;"></div></div>`).join('');}
+window.metaAns=function(qi,oi){const el=document.getElementById('mq'+qi);if(el.dataset.done)return;el.dataset.done='1';
+el.querySelectorAll('.ex-o').forEach((b,i)=>{b.disabled=true;if(i===oi)b.style.cssText+='border-color:var(--lp);background:#F5F0FF;color:var(--lp);font-weight:800;';});
+document.getElementById('mqfb'+qi).style.display='block';document.getElementById('mqfb'+qi).innerHTML='<i class="ri-lightbulb-line" style="color:var(--lp);"></i> '+META_Q[qi].fb[oi];aX(20);};
+
+// ═══ MANIFESTO ═══
+const MANIF_RULES=[{t:'Controllo sempre il lucchetto HTTPS prima di inserire dati',ic:'ri-lock-line'},{t:'Non mi connetto a Wi-Fi pubblici senza precauzioni',ic:'ri-wifi-off-line'},{t:'So che 5G non significa 5 Gigabyte',ic:'ri-signal-tower-line'},{t:'Capisco che i miei dati viaggiano attraverso cavi fisici reali',ic:'ri-global-line'},{t:'Non clicco su link sospetti nelle email',ic:'ri-spam-line'},{t:'So leggere un URL e riconoscere i siti falsi',ic:'ri-link'},{t:'Rispetto chi non ha la stessa connessione che ho io',ic:'ri-heart-line'},{t:'Capisco che Internet non è gratis: qualcuno paga le infrastrutture',ic:'ri-money-euro-circle-line'}];
+let manSel=new Set();
+function bManifesto(){document.getElementById('manifesto').innerHTML=`<div id="manRules" style="display:grid;gap:6px;">${MANIF_RULES.map((r,i)=>
+`<div class="ex" style="cursor:pointer;border-left-color:var(--bd);padding:10px 14px;margin-bottom:0;" id="man${i}" onclick="manTog(${i})">
+<div style="display:flex;align-items:center;gap:8px;">
+<div style="width:22px;height:22px;border-radius:6px;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.7em;transition:all .15s;" id="manc${i}"></div>
+<i class="${r.ic}" style="color:var(--tx3);font-size:1em;"></i><div style="font-weight:700;font-size:.82em;">${r.t}</div></div></div>`).join('')}</div>
+<div id="manMsg" style="text-align:center;margin-top:10px;font-size:.78em;font-weight:700;color:var(--tx3);">Seleziona almeno 3</div>`;}
+window.manTog=function(i){if(manSel.has(i))manSel.delete(i);else manSel.add(i);
+MANIF_RULES.forEach((_,j)=>{const el=document.getElementById('man'+j),ch=document.getElementById('manc'+j);
+if(manSel.has(j)){el.style.borderLeftColor='var(--lp)';el.style.background='#F5F0FF';ch.style.background='var(--lp)';ch.style.borderColor='var(--lp)';ch.innerHTML='<i class="ri-check-line" style="color:#fff;"></i>';}
+else{el.style.borderLeftColor='var(--bd)';el.style.background='';ch.style.background='';ch.style.borderColor='var(--bd)';ch.innerHTML='';}});
+if(manSel.size>=3&&!manSel._done){manSel._done=true;aX(40);document.getElementById('manMsg').innerHTML='<span style="color:var(--lg);">✓ Manifesto pronto! +40 XP</span>';}
+else if(manSel.size<3){document.getElementById('manMsg').textContent='Seleziona almeno 3 ('+manSel.size+'/3)';manSel._done=false;}};
+
+init();
+</script>
+</body>
+</html>
